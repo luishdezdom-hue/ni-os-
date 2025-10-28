@@ -142,7 +142,7 @@ export const TypingMode: React.FC<DrawingModeProps> = ({ targetLetter, onNextLet
   };
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-6 animate-fadeIn">
+    <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-6 animate-fadeIn">
       <h2 className="text-2xl font-bold text-slate-700">{T('drawingMode')}</h2>
       <p className="text-slate-600 text-center">{T('drawTheLetterYouSee')}</p>
       
@@ -159,7 +159,7 @@ export const TypingMode: React.FC<DrawingModeProps> = ({ targetLetter, onNextLet
                 // This should be fast due to the preloading in the useEffect hook.
                 speakText(instructionText, character.voiceName, language);
             }}
-            className="p-3 bg-sky-100 text-sky-600 rounded-full hover:bg-sky-200 transition-all self-center"
+            className="p-3 bg-purple-100 text-purple-600 rounded-full hover:bg-purple-200 transition-all self-center"
             aria-label={T('listenToLetter')}
         >
             <SpeakerWaveIcon className="w-8 h-8" />
@@ -184,7 +184,7 @@ export const TypingMode: React.FC<DrawingModeProps> = ({ targetLetter, onNextLet
         <button onClick={clearCanvas} disabled={isLoading || status === 'correct'} className="px-6 py-2 bg-slate-500 text-white font-semibold rounded-lg shadow-md hover:bg-slate-600 transition-all disabled:bg-slate-300">
             {T('clear')}
         </button>
-        <button onClick={handleCheck} disabled={isLoading || status === 'correct'} className="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-all disabled:bg-slate-400">
+        <button onClick={handleCheck} disabled={isLoading || status === 'correct'} className="px-8 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all disabled:bg-slate-400">
             {isLoading ? T('checking') : T('check')}
         </button>
       </div>
@@ -195,7 +195,7 @@ export const TypingMode: React.FC<DrawingModeProps> = ({ targetLetter, onNextLet
             <p className="text-2xl font-bold text-green-600">{T('excellent')}</p>
             <button
               onClick={handleNext}
-              className="mt-2 px-6 py-2 bg-green-500 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 transition-all"
+              className="mt-2 px-6 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all"
             >
               {T('nextLetter')}
             </button>

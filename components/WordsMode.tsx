@@ -128,6 +128,7 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character }) => 
       const nextLevel = level! + 1;
       if (score >= PASSING_SCORE && nextLevel > highestUnlockedLevel && nextLevel <= 8) {
           updateProgress(nextLevel);
+          playSound('switch'); // Play level up sound
       }
     }
   };
@@ -166,14 +167,14 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character }) => 
 
   if (phase === 'selection') {
     return (
-      <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg p-8 w-full max-w-2xl mx-auto flex flex-col items-center gap-6 animate-fadeIn">
+      <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-2xl mx-auto flex flex-col items-center gap-6 animate-fadeIn">
         <h2 className="text-3xl font-bold text-slate-800">{T('wordsMode')}</h2>
         
         <div className="w-full">
             <h3 className="text-2xl font-semibold text-slate-700 mb-4 text-center border-b-2 pb-2">{T('baseLevel')}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[1, 2, 3, 4].map(l => (
-                    <button key={`base-${l}`} onClick={() => startLevel(l, 'base')} disabled={l > highestUnlockedLevel} className="p-6 text-white font-bold text-xl rounded-lg shadow-md transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600">
+                    <button key={`base-${l}`} onClick={() => startLevel(l, 'base')} disabled={l > highestUnlockedLevel} className="p-6 text-white font-bold text-xl rounded-lg shadow-md transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600">
                         {l > highestUnlockedLevel && <LockClosedIcon className="w-5 h-5" />}
                         {T('level', { level: l.toString() })}
                     </button>
@@ -185,7 +186,7 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character }) => 
             <h3 className="text-2xl font-semibold text-slate-700 mb-4 text-center border-b-2 pb-2">{T('advancedLevel')}</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                  {[5, 6, 7, 8].map(l => (
-                    <button key={`adv-${l}`} onClick={() => startLevel(l, 'advanced')} disabled={l > highestUnlockedLevel} className="p-6 bg-sky-500 text-white font-bold text-xl rounded-lg shadow-md hover:bg-sky-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2">
+                    <button key={`adv-${l}`} onClick={() => startLevel(l, 'advanced')} disabled={l > highestUnlockedLevel} className="p-6 bg-indigo-500 text-white font-bold text-xl rounded-lg shadow-md hover:bg-indigo-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2">
                         {l > highestUnlockedLevel && <LockClosedIcon className="w-5 h-5" />}
                         {T('level', { level: l.toString() })}
                     </button>
@@ -204,7 +205,7 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character }) => 
     const nextLevelPhase = nextLevel <= 4 ? 'base' : 'advanced';
 
     return (
-      <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-4 text-center animate-scaleIn">
+      <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-4 text-center animate-scaleIn">
         <h2 className="text-3xl font-bold text-slate-800">{T('levelCompleted', { level: level!.toString() })}</h2>
         <p className="text-xl text-slate-600">{T('yourScore')}</p>
         <p className={`text-6xl font-black ${passed ? 'text-green-500' : 'text-red-500'}`}>{lastScore}%</p>
@@ -226,7 +227,7 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character }) => 
              </button>
           )}
           {passed && !isLastLevel && (
-             <button onClick={() => startLevel(nextLevel, nextLevelPhase)} disabled={nextLevel > highestUnlockedLevel} className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-all disabled:bg-slate-400 disabled:cursor-not-allowed">
+             <button onClick={() => startLevel(nextLevel, nextLevelPhase)} disabled={nextLevel > highestUnlockedLevel} className="px-6 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all disabled:bg-slate-400 disabled:cursor-not-allowed">
                 {T('nextLevel')}
              </button>
           )}
@@ -236,7 +237,7 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character }) => 
   }
 
   return (
-    <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-4 animate-fadeIn">
+    <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-4 animate-fadeIn">
         <div className="w-full flex justify-between items-center">
             <button onClick={handleBackToSelection} className="text-slate-600 hover:text-slate-800 font-semibold">&larr; {T('back')}</button>
             <div className="text-right">
@@ -264,7 +265,7 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character }) => 
                             <p className="text-4xl font-bold text-slate-800 tracking-widest">{currentWord.word.toUpperCase()}</p>
                             <button
                                 onClick={() => { playSound('click'); speakText(currentWord.word, character.voiceName, language); }}
-                                className="p-2 bg-sky-100 text-sky-600 rounded-full hover:bg-sky-200 transition-all"
+                                className="p-2 bg-purple-100 text-purple-600 rounded-full hover:bg-purple-200 transition-all"
                                 aria-label={T('listenToWord')}
                             >
                                 <SpeakerWaveIcon className="w-7 h-7" />
@@ -282,7 +283,7 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character }) => 
                             className={`w-full text-center text-2xl p-3 border-4 rounded-lg shadow-inner transition-all duration-300 ${
                                 status === 'incorrect' ? 'border-red-500 animate-shake' : 
                                 status === 'correct' ? 'border-green-500' :
-                                'border-slate-300 focus:border-green-500 focus:ring-green-500'
+                                'border-slate-300 focus:border-purple-500 focus:ring-purple-500'
                             }`}
                             placeholder="_ _ _"
                         />
@@ -300,7 +301,7 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character }) => 
                         )}
                     </div>
 
-                    <button onClick={checkAnswer} disabled={status !== 'playing' || !userInput} className="px-8 py-3 bg-green-500 text-white font-bold text-lg rounded-lg shadow-md hover:bg-green-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100">
+                    <button onClick={checkAnswer} disabled={status !== 'playing' || !userInput} className="px-8 py-3 bg-purple-500 text-white font-bold text-lg rounded-lg shadow-md hover:bg-purple-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100">
                         {T('check')}
                     </button>
                 </div>

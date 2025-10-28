@@ -19,8 +19,9 @@ const LoadingSpinner: React.FC<{ language: Language }> = ({ language }) => {
   const T = (key: string) => getTranslation(language, key);
   return (
     <div className="flex flex-col items-center justify-center text-center">
-      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mb-4"></div>
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mb-4"></div>
       <p className="text-slate-600 font-semibold">{T('analyzing')}</p>
+
       <p className="text-slate-500 text-sm">{T('identifyingLetter')}</p>
     </div>
   );
@@ -91,7 +92,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
                     <p className="text-8xl font-black text-green-500">{targetLetter}</p>
                     <button
                         onClick={handleNextQuiz}
-                        className="mt-4 px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-all"
+                        className="mt-4 px-6 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all"
                     >
                         {T('nextLetter')}
                     </button>
@@ -112,7 +113,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
         return (
             <div className="text-center animate-scaleIn">
                 <p className="text-slate-600 text-lg mb-2">{T('findThisLetter')}</p>
-                <p className="text-9xl md:text-[10rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-slate-800 leading-none">
+                <p className="text-9xl md:text-[10rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 leading-none">
                     {targetLetter}
                 </p>
             </div>
@@ -133,7 +134,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
       return (
         <div className="text-center animate-scaleIn">
             <p className="text-slate-600 text-lg mb-2">{T('itLooksLike')}</p>
-            <p className="text-9xl md:text-[12rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-400 leading-none">
+            <p className="text-9xl md:text-[12rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 leading-none">
                 {letter}
             </p>
         </div>
@@ -147,7 +148,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
   };
 
   return (
-    <div className="flex items-center justify-center h-full min-h-[200px] bg-slate-200/50 rounded-lg p-4">
+    <div className="flex items-center justify-center h-full min-h-[200px] bg-slate-100/60 rounded-lg p-4">
       {renderContent()}
     </div>
   );

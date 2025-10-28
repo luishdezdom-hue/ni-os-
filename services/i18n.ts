@@ -80,6 +80,7 @@ const translations: Record<Language, Record<string, string>> = {
     completeTheSentence: 'Completa la oración',
     selectTheCorrectImage: 'Selecciona la imagen correcta.',
     nextSentence: 'Siguiente Oración',
+    sentenceOf: 'Oración {{current}} de {{total}}',
   },
   'en-US': {
     title: 'Letter Recognition',
@@ -160,6 +161,7 @@ const translations: Record<Language, Record<string, string>> = {
     completeTheSentence: 'Complete the sentence',
     selectTheCorrectImage: 'Select the correct image.',
     nextSentence: 'Next Sentence',
+    sentenceOf: 'Sentence {{current}} of {{total}}',
   },
   'nah': {
     title: 'Tlachia Tlahcuilōlli',
@@ -240,6 +242,7 @@ const translations: Record<Language, Record<string, string>> = {
     completeTheSentence: 'Xiktemachti n tlahtōlli',
     selectTheCorrectImage: 'Xikpejpena n ixiptli yektli.',
     nextSentence: 'Okse Tlahtōlmelāhualiztli',
+    sentenceOf: 'Tlahtōlmelāhualiztli {{current}} īpan {{total}}',
   },
 };
 

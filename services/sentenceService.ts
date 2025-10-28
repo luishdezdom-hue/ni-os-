@@ -25,76 +25,106 @@ const createSvgUrl = (emoji: string) => {
   return `data:image/svg+xml;base64,${base64}`;
 };
 
-// --- Database of Words for Distractors ---
+// --- Database of Words for Images and Distractors ---
 const IMAGE_DB: { [key: string]: string } = {
-  sol: '☀️', luna: '🌙', casa: '🏠', gato: '🐈', perro: '🐕', árbol: '🌳', flor: '🌸', agua: '💧', pan: '🍞', pelota: '⚽', libro: '📖', manzana: '🍎',
-  sun: '☀️', moon: '🌙', home: '🏠', cat: '🐈', dog: '🐕', tree: '🌳', flower: '🌸', water: '💧', bread: '🍞', ball: '⚽', book: '📖', apple: '🍎',
-  tonatiuh: '☀️', metztli: '🌙', calli: '🏠', miztli: '🐈', itzcuintli: '🐕', cuahuitl: '🌳', xochitl: '🌸', atl: '💧', tlaxcalli: '🍞', axolotl: '🦎', papalotl: '🦋', tochtli: '🐇'
+  // es-MX words
+  sol: '☀️', casa: '🏠', gato: '🐈', pelota: '⚽', manzana: '🍎', perro: '🐕', pájaro: '🐦', niña: '👧', coche: '🚗', luna: '🌙', árbol: '🌳', flor: '🌸', libro: '📖', agua: '💧',
+  // en-US words (some overlap)
+  sun: '☀️', home: '🏠', cat: '🐈', ball: '⚽', apple: '🍎', dog: '🐕', bird: '🐦', girl: '👧', car: '🚗', moon: '🌙', tree: '🌳', flower: '🌸', book: '📖', water: '💧',
+  // nah words
+  tonatiuh: '☀️', calli: '🏠', miztli: '🐈', itzcuintli: '🐕', cuahuitl: '🌳', xochitl: '🌸', atl: '💧', axolotl: '🦎', papalotl: '🦋', tochtli: '🐇', oquichtli: '👦', cihuatl: '👧', metztli: '🌙'
 };
 
-// --- Sentences Database ---
-const SENTENCES_DB: { [lang in Language]: Omit<Sentence, 'correctImage' | 'distractors'>[] } = {
-  'es-MX': [
-    { text: 'El {word} es amarillo.', correctWord: 'sol' },
-    { text: 'Yo vivo en una {word}.', correctWord: 'casa' },
-    { text: 'El {word} dice miau.', correctWord: 'gato' },
-    { text: 'Las plantas necesitan {word}.', correctWord: 'agua' },
-    { text: 'Me gusta leer un {word}.', correctWord: 'libro' },
-    { text: 'La {word} es de color rojo.', correctWord: 'manzana' },
-    { text: 'El {word} ladra fuerte.', correctWord: 'perro' },
-  ],
-  'en-US': [
-    { text: 'The {word} is yellow.', correctWord: 'sun' },
-    { text: 'I live in a {word}.', correctWord: 'home' },
-    { text: 'The {word} says meow.', correctWord: 'cat' },
-    { text: 'Plants need {word}.', correctWord: 'water' },
-    { text: 'I like to read a {word}.', correctWord: 'book' },
-    { text: 'The {word} is red.', correctWord: 'apple' },
-    { text: 'The {word} barks loudly.', correctWord: 'dog' },
-  ],
-  'nah': [
-    { text: 'N {word} yetic ipan atl.', correctWord: 'axolotl' }, // The axolotl is in the water
-    { text: 'N {word} patlani.', correctWord: 'papalotl' }, // The butterfly flies
-    { text: 'Nehuatl niah n {word}.', correctWord: 'calli' }, // I go to the house
-    { text: 'N {word} xoxoctic.', correctWord: 'cuahuitl' }, // The tree is green
-    { text: 'N {word} cochi.', correctWord: 'tochtli' }, // The rabbit sleeps
-    { text: 'N {word} chipahuac.', correctWord: 'xochitl' }, // The flower is beautiful
-  ]
+const LANGUAGE_WORD_POOL: { [lang in Language]: string[] } = {
+    'es-MX': ['sol', 'casa', 'gato', 'pelota', 'manzana', 'perro', 'pájaro', 'niña', 'coche', 'luna', 'árbol', 'flor', 'libro', 'agua'],
+    'en-US': ['sun', 'home', 'cat', 'ball', 'apple', 'dog', 'bird', 'girl', 'car', 'moon', 'tree', 'flower', 'book', 'water'],
+    'nah': ['tonatiuh', 'calli', 'miztli', 'itzcuintli', 'cuahuitl', 'xochitl', 'atl', 'axolotl', 'papalotl', 'tochtli', 'oquichtli', 'cihuatl', 'metztli']
 };
 
-let lastSentenceIndex: { [lang: string]: number } = {};
 
-export const getRandomSentence = (lang: Language): Sentence => {
-  const sentenceTemplates = SENTENCES_DB[lang];
-  if (!sentenceTemplates) {
-    throw new Error(`No sentences found for language ${lang}`);
+// --- Sentences Database with Levels ---
+const SENTENCES_DB: { [lang in Language]: { [level: number]: Omit<Sentence, 'correctImage' | 'distractors'>[] } } = {
+  'es-MX': {
+    1: [
+      { text: 'El {word} es amarillo.', correctWord: 'sol' },
+      { text: 'Yo vivo en una {word}.', correctWord: 'casa' },
+      { text: 'El {word} dice miau.', correctWord: 'gato' },
+      { text: 'Me gusta jugar con la {word}.', correctWord: 'pelota' },
+      { text: 'La {word} es de color rojo.', correctWord: 'manzana' },
+    ],
+    2: [
+      { text: 'El {word} ladra fuerte.', correctWord: 'perro' },
+      { text: 'El {word} vuela en el cielo.', correctWord: 'pájaro' },
+      { text: 'La {word} va a la escuela.', correctWord: 'niña' },
+      { text: 'El {word} es de color azul.', correctWord: 'coche' },
+      { text: 'La {word} brilla de noche.', correctWord: 'luna' },
+    ]
+  },
+  'en-US': {
+    1: [
+      { text: 'The {word} is yellow.', correctWord: 'sun' },
+      { text: 'I live in a {word}.', correctWord: 'home' },
+      { text: 'The {word} says meow.', correctWord: 'cat' },
+      { text: 'I like to play with the {word}.', correctWord: 'ball' },
+      { text: 'The {word} is red.', correctWord: 'apple' },
+    ],
+    2: [
+      { text: 'The {word} barks loudly.', correctWord: 'dog' },
+      { text: 'The {word} flies in the sky.', correctWord: 'bird' },
+      { text: 'The {word} goes to school.', correctWord: 'girl' },
+      { text: 'The {word} is blue.', correctWord: 'car' },
+      { text: 'The {word} shines at night.', correctWord: 'moon' },
+    ]
+  },
+  'nah': {
+    1: [
+      { text: 'N {word} yetic ipan atl.', correctWord: 'axolotl' },
+      { text: 'N {word} patlani.', correctWord: 'papalotl' },
+      { text: 'Nehuatl niah n {word}.', correctWord: 'calli' },
+      { text: 'N {word} xoxoctic.', correctWord: 'cuahuitl' },
+      { text: 'N {word} cochi.', correctWord: 'tochtli' },
+    ],
+    2: [
+      { text: 'N {word} chipahuac.', correctWord: 'xochitl' },
+      { text: 'N {word} tlatoa.', correctWord: 'miztli' }, // The cat meows
+      { text: 'N {word} motlaloa.', correctWord: 'itzcuintli' }, // The dog runs
+      { text: 'N {word} tlacua.', correctWord: 'oquichtli' }, // The boy eats
+      { text: 'N {word} cecec.', correctWord: 'atl' }, // The water is cold
+    ]
   }
+};
 
-  let randomIndex;
-  do {
-    randomIndex = Math.floor(Math.random() * sentenceTemplates.length);
-  } while (sentenceTemplates.length > 1 && randomIndex === lastSentenceIndex[lang]);
-
-  lastSentenceIndex[lang] = randomIndex;
-  
-  const template = sentenceTemplates[randomIndex];
-  const correctWord = template.correctWord;
-
-  // Get distractor words from the full list, ensuring they are different from the correct word
-  const allWordsForLang = Object.keys(SENTENCES_DB[lang].reduce((acc, s) => ({...acc, [s.correctWord]: true }), {}));
-  const distractorWords = allWordsForLang
-    .filter(word => word !== correctWord)
-    .sort(() => 0.5 - Math.random())
-    .slice(0, 3);
-
-  const distractors = distractorWords.map(word => ({
-    word: word,
-    image: createSvgUrl(IMAGE_DB[word])
-  }));
-
-  return {
-    ...template,
-    correctImage: createSvgUrl(IMAGE_DB[correctWord]),
-    distractors: distractors,
-  };
+export const getSentencesForLevel = (level: number, lang: Language, count: number): Sentence[] => {
+    const sentenceTemplates = SENTENCES_DB[lang]?.[level];
+    if (!sentenceTemplates || sentenceTemplates.length < count) {
+        // Fallback to level 1 if requested level doesn't exist or is empty
+        const fallbackTemplates = SENTENCES_DB[lang]?.[1];
+        if (!fallbackTemplates) throw new Error(`No sentences found for language ${lang}`);
+        return getSentencesForLevel(1, lang, count);
+    }
+    
+    const shuffled = [...sentenceTemplates].sort(() => 0.5 - Math.random());
+    const selectedTemplates = shuffled.slice(0, count);
+    
+    const allWordsForLang = LANGUAGE_WORD_POOL[lang];
+    
+    return selectedTemplates.map(template => {
+        const correctWord = template.correctWord;
+        
+        const distractorWords = allWordsForLang
+            .filter(word => word !== correctWord)
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 3);
+            
+        const distractors = distractorWords.map(word => ({
+            word: word,
+            image: createSvgUrl(IMAGE_DB[word])
+        }));
+        
+        return {
+            ...template,
+            correctImage: createSvgUrl(IMAGE_DB[correctWord]),
+            distractors,
+        };
+    });
 };

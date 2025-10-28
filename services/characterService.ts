@@ -29,16 +29,16 @@ export const CHARACTERS: Character[] = [
   {
     id: 'eli',
     name: 'Eli',
-    // Friendly male voice
-    voiceName: 'Kore', 
+    // A different, distinctly male voice
+    voiceName: 'Fenrir', 
     avatar: createAvatarSvgUrl('🦁', '#FFDDC1'),
     bgImage: eliBg,
   },
   {
     id: 'abi',
     name: 'Abi',
-    // Friendly female voice
-    voiceName: 'Zephyr',
+    // A friendly female voice
+    voiceName: 'Kore',
     avatar: createAvatarSvgUrl('🐒', '#C1FFD7'),
     bgImage: abiBg,
   },
@@ -53,8 +53,8 @@ export const CHARACTERS: Character[] = [
   {
     id: 'hanqui',
     name: 'Hanqui',
-    // Another friendly female voice
-    voiceName: 'Charon',
+    // A different, distinctly female voice
+    voiceName: 'Zephyr',
     avatar: createAvatarSvgUrl('🐹', '#FFC1F5'),
     bgImage: hanquiBg,
   }

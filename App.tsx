@@ -33,7 +33,7 @@ const App: React.FC = () => {
   
   const [targetLetter, setTargetLetter] = useState<string | null>(null);
   const [quizStatus, setQuizStatus] = useState<'correct' | 'incorrect' | 'waiting' | null>(null);
-
+  
   const cameraFeedRef = useRef<CameraFeedHandle>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   
@@ -185,8 +185,8 @@ const App: React.FC = () => {
       onClick={() => onClick(targetMode)}
       className={`w-full flex items-center justify-start gap-3 px-4 py-3 rounded-lg font-semibold transition-all duration-300 text-base ${
         currentMode === targetMode
-          ? 'bg-green-600 text-white shadow-lg'
-          : 'bg-white/60 hover:bg-green-100 text-slate-700'
+          ? 'bg-purple-500 text-white shadow-lg'
+          : 'bg-white/60 hover:bg-purple-100 text-slate-700'
       }`}
     >
       {icon}
@@ -197,12 +197,12 @@ const App: React.FC = () => {
   const showCameraControls = mode === 'recognize' || mode === 'quiz';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-100 to-emerald-200 flex flex-col items-center p-4 font-sans">
+    <div className="min-h-screen bg-gradient-to-br from-violet-200 to-purple-300 flex flex-col items-center p-4 font-sans">
       <div className="w-full max-w-6xl mx-auto">
-        <header className="relative text-center mb-6 bg-white/50 backdrop-blur-sm p-4 rounded-xl shadow-md">
+        <header className="relative text-center mb-6 bg-white/60 backdrop-blur-lg p-4 rounded-xl shadow-md">
           <button
             onClick={handleGoHome}
-            className="absolute top-1/2 -translate-y-1/2 left-4 bg-white/60 p-2 rounded-full text-slate-600 hover:bg-white hover:text-green-600 transition-all"
+            className="absolute top-1/2 -translate-y-1/2 left-4 bg-white/60 p-2 rounded-full text-slate-600 hover:bg-white hover:text-purple-600 transition-all"
             aria-label={T('backToHome')}
           >
             <HomeIcon className="w-6 h-6" />
@@ -221,7 +221,7 @@ const App: React.FC = () => {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* --- Left Sidebar --- */}
           <aside className="w-full lg:w-1/3 xl:w-1/4 flex flex-col gap-6">
-            <div className="bg-white/50 backdrop-blur-sm p-4 rounded-xl shadow-lg">
+            <div className="bg-white/60 backdrop-blur-lg p-4 rounded-xl shadow-lg">
                 <h2 className="text-xl font-bold text-slate-700 mb-4">{T('modes')}</h2>
                 <div className="flex flex-col gap-3">
                     <SidebarButton currentMode={mode} targetMode="recognize" onClick={handleModeChange} icon={<SparklesIcon className="w-6 h-6" />} text={T('recognize')} />
@@ -233,14 +233,14 @@ const App: React.FC = () => {
             </div>
 
             {showCameraControls && (
-                 <div className="bg-white/50 backdrop-blur-sm p-4 rounded-xl shadow-lg">
+                 <div className="bg-white/60 backdrop-blur-lg p-4 rounded-xl shadow-lg">
                      <h2 className="text-xl font-bold text-slate-700 mb-4">{T('controls')}</h2>
                      {mediaSource !== 'none' ? (
                         <div className="flex flex-col gap-4">
                             <button
                                 onClick={handleRecognize}
                                 disabled={isLoading}
-                                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-green-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-green-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100"
+                                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-purple-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-purple-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100"
                             >
                                 <SparklesIcon className="w-7 h-7" />
                                 {isLoading ? T('recognizing') : T('recognizeLetter')}
@@ -248,7 +248,7 @@ const App: React.FC = () => {
                             {mediaSource === 'camera' && (
                                 <button
                                     onClick={toggleCamera}
-                                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all"
+                                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-rose-500 text-white font-semibold rounded-lg shadow-md hover:bg-rose-600 transition-all"
                                 >
                                     <PowerIcon className="w-6 h-6" />
                                     {T('turnOffCamera')}
@@ -257,7 +257,7 @@ const App: React.FC = () => {
                             {mediaSource === 'video' && (
                                  <button
                                     onClick={removeVideo}
-                                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-red-500 text-white font-semibold rounded-lg shadow-md hover:bg-red-600 transition-all"
+                                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-rose-500 text-white font-semibold rounded-lg shadow-md hover:bg-rose-600 transition-all"
                                 >
                                     <PowerIcon className="w-6 h-6" />
                                     {T('removeVideo')}
@@ -268,14 +268,14 @@ const App: React.FC = () => {
                         <div className="flex flex-col gap-4">
                             <button
                                 onClick={toggleCamera}
-                                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                             >
                                 <CameraIcon className="w-6 h-6" />
                                 {T('turnOnCamera')}
                             </button>
                             <button
                                 onClick={handleUploadClick}
-                                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:bg-sky-700 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500"
+                                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 <ArrowUpTrayIcon className="w-6 h-6" />
                                 {T('uploadVideo')}
@@ -300,7 +300,7 @@ const App: React.FC = () => {
               {mode === 'words' && <WordsMode language={language} character={character} />}
               {mode === 'sentences' && <SentencesMode language={language} character={character} />}
               {showCameraControls && (
-                  <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-lg p-4 md:p-8 flex flex-col gap-8">
+                  <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-4 md:p-8 flex flex-col gap-8">
                       <div className="flex-1 flex flex-col items-center justify-center bg-slate-100 rounded-xl p-4 min-h-[300px] lg:min-h-[480px]">
                           {mediaSource !== 'none' ? (
                               <CameraFeed ref={cameraFeedRef} videoSrc={videoSrc ?? undefined} />
@@ -334,7 +334,7 @@ const App: React.FC = () => {
           </main>
         </div>
 
-        <footer className="text-center mt-8 text-slate-500 bg-white/50 p-2 rounded-lg">
+        <footer className="text-center mt-8 text-slate-500 bg-white/60 p-2 rounded-lg">
             <p>UMB ATENCO</p>
         </footer>
       </div>

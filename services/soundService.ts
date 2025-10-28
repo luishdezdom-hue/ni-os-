@@ -121,6 +121,15 @@ const getAudioBuffer = async (text: string, voiceName: string, language: Languag
     }
 };
 
+export const ensureAudioIsCached = (text: string, voiceName: string, language: Language): Promise<AudioBuffer | null> => {
+    if (typeof window === 'undefined' || !text || !voiceName) {
+        return Promise.resolve(null);
+    }
+    // This function simply calls getAudioBuffer and returns its promise,
+    // ensuring the audio is in the cache when the promise resolves.
+    return getAudioBuffer(text, voiceName, language);
+};
+
 export const speakText = async (text: string, voiceName: string, language: Language) => {
     if (outputAudioContext.state === 'suspended') {
         await outputAudioContext.resume();
@@ -132,7 +141,7 @@ export const speakText = async (text: string, voiceName: string, language: Langu
             const source = outputAudioContext.createBufferSource();
             source.buffer = audioBuffer;
             source.connect(outputNode);
-            source.start();
+            source.start(0);
         } catch (e) {
             console.error("Error playing audio buffer", e);
         }
