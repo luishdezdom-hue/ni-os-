@@ -99,24 +99,28 @@ const WORDS_DB: { [lang in Language]: { [level: number]: Word[] } } = {
       { word: 'ehe', image: createSvgUrl('✅') }, // Yes
       { word: 'ayo', image: createSvgUrl('🎃') }, // Pumpkin
       { word: 'atl', image: createSvgUrl('💧') }, // Water
+      { word: 'metl', image: createSvgUrl('🌵') }, // Maguey
     ],
-    2: [ // 4 letters
+    2: [ // 4-6 letters
       { word: 'calli', image: createSvgUrl('🏠') }, // House
       { word: 'xochi', image: createSvgUrl('🌸') }, // Flower
       { word: 'toto', image: createSvgUrl('🐦') }, // Bird
       { word: 'tepe', image: createSvgUrl('⛰️') }, // Hill
+      { word: 'miztli', image: createSvgUrl('🐈') }, // Cat
     ],
     3: [ // 5 letters
       { word: 'koatl', image: createSvgUrl('🐍') }, // Snake
       { word: 'michi', image: createSvgUrl('🐟') }, // Fish
       { word: 'tochi', image: createSvgUrl('🐇') }, // Rabbit
       { word: 'mazat', image: createSvgUrl('🦌') }, // Deer
+      { word: 'citlal', image: createSvgUrl('⭐') }, // Star
     ],
     4: [ // 6+ letters
       { word: 'axolotl', image: createSvgUrl('🦎') }, // Axolotl
       { word: 'papalotl', image: createSvgUrl('🦋') }, // Butterfly
       { word: 'tekpilli', image: createSvgUrl('👑') }, // Noble
       { word: 'chilli', image: createSvgUrl('🌶️') }, // Chili
+      { word: 'ehecatl', image: createSvgUrl('🌬️') }, // Wind
     ]
   }
 };

@@ -11,15 +11,15 @@ type AnswerStatus = 'playing' | 'correct' | 'incorrect';
 const SENTENCES_PER_LEVEL = 5;
 const PASSING_SCORE = 80;
 const TOTAL_LEVELS = 2; // Based on the data in sentenceService
-const LOCAL_STORAGE_KEY = 'reconocimientoLetrasProgresoOraciones';
 
 
 interface SentencesModeProps {
   language: Language;
   character: Character;
+  userName: string;
 }
 
-export const SentencesMode: React.FC<SentencesModeProps> = ({ language, character }) => {
+export const SentencesMode: React.FC<SentencesModeProps> = ({ language, character, userName }) => {
   const [phase, setPhase] = useState<GamePhase>('selection');
   const [level, setLevel] = useState<number | null>(null);
   const [currentSentence, setCurrentSentence] = useState<Sentence | null>(null);
@@ -34,6 +34,7 @@ export const SentencesMode: React.FC<SentencesModeProps> = ({ language, characte
   const [lastScore, setLastScore] = useState(0);
 
   const T = (key: string, replacements?: {[key: string]: string}) => getTranslation(language, key, replacements);
+  const LOCAL_STORAGE_KEY = `reconocimientoLetrasProgresoOraciones_${userName}`;
 
   useEffect(() => {
     try {
@@ -52,7 +53,7 @@ export const SentencesMode: React.FC<SentencesModeProps> = ({ language, characte
       setHighestUnlockedLevel(1);
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(1));
     }
-  }, []);
+  }, [LOCAL_STORAGE_KEY]);
 
   const updateProgress = useCallback((newHighestLevel: number) => {
     setHighestUnlockedLevel(newHighestLevel);
@@ -61,7 +62,7 @@ export const SentencesMode: React.FC<SentencesModeProps> = ({ language, characte
     } catch (error) {
       console.error("Failed to save progress:", error);
     }
-  }, []);
+  }, [LOCAL_STORAGE_KEY]);
 
   const startLevel = useCallback((selectedLevel: number) => {
     playSound('click');
@@ -86,9 +87,6 @@ export const SentencesMode: React.FC<SentencesModeProps> = ({ language, characte
 
 
   const handleOptionClick = (word: string) => {
-    // FIX: The original `status === 'correct'` check caused a TypeScript error because
-    // the button calling this function is disabled when `status` is 'correct'.
-    // The redundant checks have been removed to fix the error and simplify the logic.
     if (!currentSentence) {
       return;
     }
@@ -96,9 +94,6 @@ export const SentencesMode: React.FC<SentencesModeProps> = ({ language, characte
     setSelectedWord(word);
 
     if (word === currentSentence.correctWord) {
-      // Only increment score if they haven't gotten it right yet for this turn.
-      // Since buttons are disabled on 'correct', this logic effectively means
-      // we give a point even if they retry after an incorrect answer.
       if (status !== 'correct') {
         setSessionCorrectCount((prev) => prev + 1);
       }
@@ -157,15 +152,24 @@ export const SentencesMode: React.FC<SentencesModeProps> = ({ language, characte
   if (phase === 'selection') {
     return (
       <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-2xl mx-auto flex flex-col items-center gap-6 animate-fadeIn">
-        <h2 className="text-3xl font-bold text-slate-800">{T('sentencesMode')}</h2>
+        <h2 className="text-3xl font-bold text-slate-800 text-center">
+            {T('sentencesMode')}
+            {language !== 'es-MX' && <span className="block text-sm font-normal text-slate-500 mt-1">({getTranslation('es-MX', 'sentencesMode')})</span>}
+        </h2>
         
         <div className="w-full">
-            <h3 className="text-2xl font-semibold text-slate-700 mb-4 text-center border-b-2 pb-2">{T('completeTheSentence')}</h3>
+            <h3 className="text-2xl font-semibold text-slate-700 mb-4 text-center border-b-2 pb-2">
+                {T('completeTheSentence')}
+                {language !== 'es-MX' && <span className="block text-sm font-normal text-slate-500 mt-1">({getTranslation('es-MX', 'completeTheSentence')})</span>}
+            </h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[1, 2].map(l => ( // Only show 2 levels as defined in service
                     <button key={`level-${l}`} onClick={() => startLevel(l)} disabled={l > highestUnlockedLevel} className="p-6 text-white font-bold text-xl rounded-lg shadow-md transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600">
                         {l > highestUnlockedLevel && <LockClosedIcon className="w-5 h-5" />}
-                        {T('level', { level: l.toString() })}
+                        <span className="text-center">
+                            {T('level', { level: l.toString() })}
+                            {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', 'level', { level: l.toString() })})</span>}
+                        </span>
                     </button>
                 ))}
             </div>
@@ -180,29 +184,47 @@ export const SentencesMode: React.FC<SentencesModeProps> = ({ language, characte
 
     return (
       <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-4 text-center animate-scaleIn">
-        <h2 className="text-3xl font-bold text-slate-800">{T('levelCompleted', { level: level!.toString() })}</h2>
-        <p className="text-xl text-slate-600">{T('yourScore')}</p>
+        <h2 className="text-3xl font-bold text-slate-800">
+            {T('levelCompleted', { level: level!.toString() })}
+            {language !== 'es-MX' && <span className="block text-sm font-normal text-slate-500 mt-1">({getTranslation('es-MX', 'levelCompleted', { level: level!.toString() })})</span>}
+        </h2>
+        <p className="text-xl text-slate-600">
+            {T('yourScore')}
+            {language !== 'es-MX' && <span className="block text-sm font-normal text-slate-500 mt-1">({getTranslation('es-MX', 'yourScore')})</span>}
+        </p>
         <p className={`text-6xl font-black ${passed ? 'text-green-500' : 'text-red-500'}`}>{lastScore}%</p>
         {passed ? (
           <>
-            <p className="text-xl font-semibold text-green-600 mt-2">{T('excellentWork')}</p>
-            {!isLastLevel && <p className="text-slate-600">{T('unlockedNextLevel')}</p>}
+            <p className="text-xl font-semibold text-green-600 mt-2">
+                {T('excellentWork')}
+                {language !== 'es-MX' && <span className="block text-sm font-normal text-green-500 mt-1">({getTranslation('es-MX', 'excellentWork')})</span>}
+            </p>
+            {!isLastLevel && <p className="text-slate-600">
+                {T('unlockedNextLevel')}
+                {language !== 'es-MX' && <span className="block text-sm font-normal text-slate-500 mt-1">({getTranslation('es-MX', 'unlockedNextLevel')})</span>}
+            </p>}
           </>
         ) : (
-          <p className="text-xl font-semibold text-orange-500 mt-2">{T('almostThere', { score: PASSING_SCORE.toString() })}</p>
+          <p className="text-xl font-semibold text-orange-500 mt-2">
+            {T('almostThere', { score: PASSING_SCORE.toString() })}
+            {language !== 'es-MX' && <span className="block text-sm font-normal text-orange-500 mt-1">({getTranslation('es-MX', 'almostThere', { score: PASSING_SCORE.toString() })})</span>}
+          </p>
         )}
         <div className="flex flex-col sm:flex-row gap-4 mt-6">
           <button onClick={handleBackToSelection} className="px-6 py-3 bg-slate-500 text-white font-semibold rounded-lg shadow-md hover:bg-slate-600 transition-all">
             {T('backToLevels')}
+            {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', 'backToLevels')})</span>}
           </button>
           {!passed && (
              <button onClick={() => startLevel(level!)} className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-lg shadow-md hover:bg-orange-600 transition-all">
                 {T('retry')}
+                {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', 'retry')})</span>}
              </button>
           )}
           {passed && !isLastLevel && (
              <button onClick={() => startLevel(level! + 1)} disabled={(level! + 1) > highestUnlockedLevel} className="px-6 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all disabled:bg-slate-400 disabled:cursor-not-allowed">
                 {T('nextLevel')}
+                {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', 'nextLevel')})</span>}
              </button>
           )}
         </div>
@@ -226,10 +248,19 @@ export const SentencesMode: React.FC<SentencesModeProps> = ({ language, characte
   return (
     <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-2xl mx-auto flex flex-col items-center gap-6 animate-fadeIn">
       <div className="w-full flex justify-between items-center">
-        <button onClick={handleBackToSelection} className="text-slate-600 hover:text-slate-800 font-semibold">&larr; {T('back')}</button>
+        <button onClick={handleBackToSelection} className="text-slate-600 hover:text-slate-800 font-semibold">
+            &larr; {T('back')}
+            {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5">({getTranslation('es-MX', 'back')})</span>}
+        </button>
         <div className="text-right">
-            <p className="font-bold text-slate-700">{T('level', { level: level!.toString() })}</p>
-            <p className="text-sm text-slate-500">{T('sentenceOf', { current: (currentSentenceIndex + 1).toString(), total: SENTENCES_PER_LEVEL.toString() })}</p>
+            <p className="font-bold text-slate-700">
+                {T('level', { level: level!.toString() })}
+                {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5">({getTranslation('es-MX', 'level', { level: level!.toString() })})</span>}
+            </p>
+            <p className="text-sm text-slate-500">
+                {T('sentenceOf', { current: (currentSentenceIndex + 1).toString(), total: SENTENCES_PER_LEVEL.toString() })}
+                {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5">({getTranslation('es-MX', 'sentenceOf', { current: (currentSentenceIndex + 1).toString(), total: SENTENCES_PER_LEVEL.toString() })})</span>}
+            </p>
         </div>
       </div>
 
@@ -277,15 +308,22 @@ export const SentencesMode: React.FC<SentencesModeProps> = ({ language, characte
       <div className="h-20 mt-4 flex items-center justify-center">
         {status === 'correct' && (
             <div className="text-center animate-scaleIn flex flex-col items-center gap-4">
-                <p className="text-2xl font-bold text-green-600">{T('correctExclamation')}</p>
+                <p className="text-2xl font-bold text-green-600">
+                    {T('correctExclamation')}
+                    {language !== 'es-MX' && <span className="block text-sm font-normal mt-1">({getTranslation('es-MX', 'correctExclamation')})</span>}
+                </p>
                 <button onClick={goToNextSentence} className="px-8 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all">
-                  {currentSentenceIndex < SENTENCES_PER_LEVEL - 1 ? T('nextSentence') : T('viewResults')}
+                    {currentSentenceIndex < SENTENCES_PER_LEVEL - 1 ? T('nextSentence') : T('viewResults')}
+                    {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', currentSentenceIndex < SENTENCES_PER_LEVEL - 1 ? 'nextSentence' : 'viewResults')})</span>}
                 </button>
             </div>
         )}
          {status === 'incorrect' && selectedWord && (
             <div className="text-center animate-shake">
-                <p className="text-xl font-semibold text-orange-600">{T('tryAgain')}</p>
+                <p className="text-xl font-semibold text-orange-600">
+                    {T('tryAgain')}
+                    {language !== 'es-MX' && <span className="block text-sm font-normal mt-1">({getTranslation('es-MX', 'tryAgain')})</span>}
+                </p>
             </div>
         )}
       </div>

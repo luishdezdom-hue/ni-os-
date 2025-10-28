@@ -53,9 +53,11 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({ onCharac
       <div className="w-full max-w-3xl mx-auto text-center">
         <h1 className="text-4xl md:text-5xl font-bold text-slate-800 tracking-tight">
           {T('chooseYourGuide')}
+          {language !== 'es-MX' && <span className="block text-lg font-normal text-slate-500 mt-1">({getTranslation('es-MX', 'chooseYourGuide')})</span>}
         </h1>
         <p className="text-slate-600 mt-2 text-lg mb-8">
           {T('selectACharacter')}
+          {language !== 'es-MX' && <span className="block text-sm font-normal text-slate-500 mt-1">({getTranslation('es-MX', 'selectACharacter')})</span>}
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
           {CHARACTERS.map(char => (
@@ -81,7 +83,10 @@ export const CharacterSelection: React.FC<CharacterSelectionProps> = ({ onCharac
           disabled={!selectedId}
           className="px-12 py-4 bg-purple-500 text-white font-bold text-xl rounded-lg shadow-lg hover:bg-purple-600 transition-all transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100"
         >
-          {T('begin')}
+          <span className="text-center">
+            {T('begin')}
+            {language !== 'es-MX' && <span className="block text-sm font-normal mt-1 opacity-80">({getTranslation('es-MX', 'begin')})</span>}
+          </span>
         </button>
       </div>
     </div>

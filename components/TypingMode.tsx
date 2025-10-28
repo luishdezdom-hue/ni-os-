@@ -143,12 +143,21 @@ export const TypingMode: React.FC<DrawingModeProps> = ({ targetLetter, onNextLet
 
   return (
     <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-6 animate-fadeIn">
-      <h2 className="text-2xl font-bold text-slate-700">{T('drawingMode')}</h2>
-      <p className="text-slate-600 text-center">{T('drawTheLetterYouSee')}</p>
+      <h2 className="text-2xl font-bold text-slate-700 text-center">
+        {T('drawingMode')}
+        {language !== 'es-MX' && <span className="block text-sm font-normal text-slate-500 mt-1">({getTranslation('es-MX', 'drawingMode')})</span>}
+      </h2>
+      <p className="text-slate-600 text-center">
+        {T('drawTheLetterYouSee')}
+        {language !== 'es-MX' && <span className="block text-sm font-normal text-slate-500 mt-1">({getTranslation('es-MX', 'drawTheLetterYouSee')})</span>}
+      </p>
       
       <div className="my-2 flex items-center justify-center gap-4">
         <div className="text-center">
-            <p className="text-slate-600">{T('letterToDraw')}</p>
+            <p className="text-slate-600">
+              {T('letterToDraw')}
+              {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'letterToDraw')})</span>}
+            </p>
             <p className="text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-slate-800 leading-none">
                 {targetLetter}
             </p>
@@ -183,27 +192,36 @@ export const TypingMode: React.FC<DrawingModeProps> = ({ targetLetter, onNextLet
       <div className="flex gap-4">
         <button onClick={clearCanvas} disabled={isLoading || status === 'correct'} className="px-6 py-2 bg-slate-500 text-white font-semibold rounded-lg shadow-md hover:bg-slate-600 transition-all disabled:bg-slate-300">
             {T('clear')}
+            {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', 'clear')})</span>}
         </button>
         <button onClick={handleCheck} disabled={isLoading || status === 'correct'} className="px-8 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all disabled:bg-slate-400">
             {isLoading ? T('checking') : T('check')}
+            {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', isLoading ? 'checking' : 'check')})</span>}
         </button>
       </div>
 
       <div className="h-16 mt-2">
         {status === 'correct' && (
           <div className="text-center animate-scaleIn">
-            <p className="text-2xl font-bold text-green-600">{T('excellent')}</p>
+            <p className="text-2xl font-bold text-green-600">
+              {T('excellent')}
+              {language !== 'es-MX' && <span className="block text-sm font-normal text-green-500 mt-1">({getTranslation('es-MX', 'excellent')})</span>}
+            </p>
             <button
               onClick={handleNext}
               className="mt-2 px-6 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all"
             >
               {T('nextLetter')}
+              {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', 'nextLetter')})</span>}
             </button>
           </div>
         )}
         {status === 'incorrect' && (
           <div className="text-center animate-shake">
-            <p className="text-xl font-semibold text-orange-600">{T('goodTry')}</p>
+            <p className="text-xl font-semibold text-orange-600">
+              {T('goodTry')}
+              {language !== 'es-MX' && <span className="block text-sm font-normal text-orange-500 mt-1">({getTranslation('es-MX', 'goodTry')})</span>}
+            </p>
           </div>
         )}
       </div>

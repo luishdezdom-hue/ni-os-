@@ -20,9 +20,15 @@ const LoadingSpinner: React.FC<{ language: Language }> = ({ language }) => {
   return (
     <div className="flex flex-col items-center justify-center text-center">
       <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mb-4"></div>
-      <p className="text-slate-600 font-semibold">{T('analyzing')}</p>
+      <p className="text-slate-600 font-semibold">
+        {T('analyzing')}
+        {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'analyzing')})</span>}
+      </p>
 
-      <p className="text-slate-500 text-sm">{T('identifyingLetter')}</p>
+      <p className="text-slate-500 text-sm">
+        {T('identifyingLetter')}
+        {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5">({getTranslation('es-MX', 'identifyingLetter')})</span>}
+      </p>
     </div>
   );
 };
@@ -77,7 +83,10 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
     if (error) {
       return (
         <div className="text-center text-red-600 bg-red-100 p-4 rounded-lg animate-shake">
-          <p className="font-bold">{T('ohNo')}</p>
+          <p className="font-bold">
+            {T('ohNo')}
+            {language !== 'es-MX' && <span className="block text-sm font-normal text-red-500 mt-0.5">({getTranslation('es-MX', 'ohNo')})</span>}
+          </p>
           <p>{error}</p>
         </div>
       );
@@ -87,14 +96,23 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
         if (quizStatus === 'correct') {
             return (
                 <div className="text-center animate-scaleIn">
-                    <p className="text-2xl font-bold text-green-600">{T('correctExclamation')}</p>
-                    <p className="text-slate-600 mt-2">{T('youFoundLetter')}</p>
+                    <p className="text-2xl font-bold text-green-600">
+                        {T('correctExclamation')}
+                        {language !== 'es-MX' && <span className="block text-sm font-normal text-green-500 mt-0.5">({getTranslation('es-MX', 'correctExclamation')})</span>}
+                    </p>
+                    <p className="text-slate-600 mt-2">
+                        {T('youFoundLetter')}
+                        {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'youFoundLetter')})</span>}
+                    </p>
                     <p className="text-8xl font-black text-green-500">{targetLetter}</p>
                     <button
                         onClick={handleNextQuiz}
                         className="mt-4 px-6 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all"
                     >
-                        {T('nextLetter')}
+                        <span className="text-center">
+                            {T('nextLetter')}
+                            {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', 'nextLetter')})</span>}
+                        </span>
                     </button>
                 </div>
             )
@@ -102,17 +120,27 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
         if (quizStatus === 'incorrect' && letter) {
              return (
                 <div className="text-center animate-shake">
-                    <p className="text-2xl font-bold text-orange-600">{T('almost')}</p>
+                    <p className="text-2xl font-bold text-orange-600">
+                        {T('almost')}
+                        {language !== 'es-MX' && <span className="block text-sm font-normal text-orange-500 mt-0.5">({getTranslation('es-MX', 'almost')})</span>}
+                    </p>
                     <p className="text-slate-600 mt-2">
                         {T('cameraSaw', { sawLetter: letter, targetLetter: targetLetter! })}
+                        {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'cameraSaw', { sawLetter: letter, targetLetter: targetLetter! })})</span>}
                     </p>
-                    <p className="text-slate-500 mt-2">{T('keepTrying')}</p>
+                    <p className="text-slate-500 mt-2">
+                        {T('keepTrying')}
+                        {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'keepTrying')})</span>}
+                    </p>
                 </div>
             )
         }
         return (
             <div className="text-center animate-scaleIn">
-                <p className="text-slate-600 text-lg mb-2">{T('findThisLetter')}</p>
+                <p className="text-slate-600 text-lg mb-2">
+                    {T('findThisLetter')}
+                    {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'findThisLetter')})</span>}
+                </p>
                 <p className="text-9xl md:text-[10rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 leading-none">
                     {targetLetter}
                 </p>
@@ -126,14 +154,23 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
         return (
              <div className="text-center animate-shake">
                 <p className="text-8xl font-black text-slate-400">?</p>
-                <p className="mt-2 text-slate-600 font-semibold">{T('couldNotIdentify')}</p>
-                <p className="mt-1 text-sm text-slate-500">{T('tryCentering')}</p>
+                <p className="mt-2 text-slate-600 font-semibold">
+                    {T('couldNotIdentify')}
+                    {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'couldNotIdentify')})</span>}
+                </p>
+                <p className="mt-1 text-sm text-slate-500">
+                    {T('tryCentering')}
+                    {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'tryCentering')})</span>}
+                </p>
             </div>
         )
       }
       return (
         <div className="text-center animate-scaleIn">
-            <p className="text-slate-600 text-lg mb-2">{T('itLooksLike')}</p>
+            <p className="text-slate-600 text-lg mb-2">
+                {T('itLooksLike')}
+                {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'itLooksLike')})</span>}
+            </p>
             <p className="text-9xl md:text-[12rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 leading-none">
                 {letter}
             </p>
@@ -142,7 +179,10 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
     }
     return (
       <div className="text-center text-slate-500">
-        <p className="text-lg">{T('showAndRecognize')}</p>
+        <p className="text-lg">
+          {T('showAndRecognize')}
+          {language !== 'es-MX' && <span className="block text-sm font-normal mt-1">({getTranslation('es-MX', 'showAndRecognize')})</span>}
+        </p>
       </div>
     );
   };

@@ -1,7 +1,8 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+// FIX: The import path for `App.tsx` was incorrect, causing a module resolution error. The path is corrected from './App' to './App.tsx' to ensure the file is correctly imported.
+import App from './App.tsx';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

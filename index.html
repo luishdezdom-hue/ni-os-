@@ -4,7 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reconocimiento de letras / Letter Recognition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          fontFamily: {
+            sans: ['DynaPuff', 'cursive'],
+          },
+        }
+      }
+    </script>
 <script type="importmap">
 {
   "imports": {
@@ -16,6 +28,18 @@
 }
 </script>
 <style>
+    body {
+        --tw-bg-opacity: 1;
+        background-color: rgb(221 214 254 / var(--tw-bg-opacity)); /* Fallback */
+        background-size: 400% 400%;
+        background-image: linear-gradient(-45deg, #e0c3fc, #8ec5fc, #f0d9e8, #c8d9e5);
+        animation: background-pan 25s ease infinite;
+    }
+    @keyframes background-pan {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
         to { opacity: 1; transform: translateY(0); }
@@ -29,6 +53,26 @@
         10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
         20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
+    @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 20px 0px rgba(168, 85, 247, 0.4); }
+        50% { box-shadow: 0 0 30px 10px rgba(168, 85, 247, 0.2); }
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+    @keyframes float-2 {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(-10px, -15px); }
+    }
+    @keyframes float-3 {
+        0%, 100% { transform: translate(0, 0); }
+        50% { transform: translate(15px, -10px); }
+    }
+    @keyframes float-spin {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-25px) rotate(180deg); }
+    }
     .animate-fadeIn {
         animation: fadeIn 0.5s ease-out forwards;
     }
@@ -37,6 +81,25 @@
     }
     .animate-shake {
         animation: shake 0.5s ease-in-out forwards;
+    }
+    .animate-pulse-glow {
+        animation: pulse-glow 3s infinite ease-in-out;
+    }
+    .animate-float, .animate-float-2, .animate-float-3, .animate-float-spin {
+        animation-timing-function: ease-in-out;
+        animation-iteration-count: infinite;
+    }
+    .animate-float {
+        animation-name: float;
+    }
+    .animate-float-2 {
+        animation-name: float-2;
+    }
+    .animate-float-3 {
+        animation-name: float-3;
+    }
+    .animate-float-spin {
+        animation-name: float-spin;
     }
 </style>
 </head>

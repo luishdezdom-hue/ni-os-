@@ -1,345 +1,327 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { CameraFeed, CameraFeedHandle } from './components/CameraFeed';
-import { ResultDisplay } from './components/ResultDisplay';
-import { TypingMode } from './components/TypingMode';
+import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import { Character } from './services/characterService';
+import { Language } from './services/i18n';
+import { LanguageSelection } from './components/LanguageSelection';
+import { CharacterSelection } from './components/CharacterSelection';
+import { ColorsMode } from './components/ColorsMode';
+import { MatchingColorsMode } from './components/MatchingColorsMode';
+import { ColorGameSelection } from './components/ColorGameSelection';
+import { MathGameSelection } from './components/MathGameSelection';
+import { ArithmeticMode } from './components/ArithmeticMode';
+import { NumberWritingMode } from './components/NumberWritingMode';
 import { WordsMode } from './components/WordsMode';
 import { SentencesMode } from './components/SentencesMode';
+import { CameraFeed, CameraFeedHandle } from './components/CameraFeed';
+import { ResultDisplay } from './components/ResultDisplay';
 import { recognizeLetter } from './services/geminiService';
-import { CameraIcon, SparklesIcon, PowerIcon, QuestionMarkCircleIcon, PencilIcon, BookOpenIcon, HomeIcon, ArrowUpTrayIcon, ChatBubbleBottomCenterTextIcon } from './components/Icons';
-import { playSound, primeAlphabetCache } from './services/soundService';
-import { LanguageSelection } from './components/LanguageSelection';
-import { getTranslation, Language } from './services/i18n';
-import { Character } from './services/characterService';
-import { CharacterSelection } from './components/CharacterSelection';
+import { playSound } from './services/soundService';
+import { TypingMode } from './components/TypingMode';
+import { ArrowLeftIcon, BookOpenIcon, Bars3BottomLeftIcon, SwatchIcon, HashtagIcon, UserIcon } from './components/Icons';
+import { DecorativeBackground } from './components/DecorativeBackground';
+import { UserLogin } from './components/UserLogin';
+import { ProgressView } from './components/ProgressView';
 
-type Mode = 'recognize' | 'quiz' | 'typing' | 'words' | 'sentences';
-type MediaSource = 'none' | 'camera' | 'video';
+type AppState = 'user_login' | 'lang_select' | 'char_select' | 'main_app';
+type MainMode = 'alphabet' | 'words' | 'sentences' | 'colors' | 'numbers' | 'progress';
+type InitialPath = 'colors' | 'numbers';
 
-const ALPHABETS = {
+interface User {
+  name: string;
+  age: string;
+}
+
+const ALPHABETS: { [lang in Language]: string[] } = {
   'es-MX': 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split(''),
   'en-US': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
-  'nah': 'ACHEIKLMNOPQTUXZ'.split(''),
+  'nah': 'ABCDEHIJKLMNÑOPSTUWXYZ'.split(''), // A simplified alphabet for Nahuatl
 };
 
 const App: React.FC = () => {
-  const [language, setLanguage] = useState<Language | null>(null);
-  const [character, setCharacter] = useState<Character | null>(null);
-  const [mode, setMode] = useState<Mode>('recognize');
-  const [recognizedLetter, setRecognizedLetter] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [mediaSource, setMediaSource] = useState<MediaSource>('none');
-  const [videoSrc, setVideoSrc] = useState<string | null>(null);
-  
-  const [targetLetter, setTargetLetter] = useState<string | null>(null);
-  const [quizStatus, setQuizStatus] = useState<'correct' | 'incorrect' | 'waiting' | null>(null);
-  
-  const cameraFeedRef = useRef<CameraFeedHandle>(null);
-  const videoInputRef = useRef<HTMLInputElement>(null);
-  
-  const T = (key: string, replacements?: {[key: string]: string}) => {
-    return getTranslation(language!, key, replacements);
-  };
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [appState, setAppState] = useState<AppState>('user_login');
+    const [mainMode, setMainMode] = useState<MainMode>('alphabet');
+    const [initialPath, setInitialPath] = useState<InitialPath | null>(null);
 
-  const generateNewTargetLetter = useCallback(() => {
-    if (!language) return;
-    const alphabet = ALPHABETS[language];
-    const newLetter = alphabet[Math.floor(Math.random() * alphabet.length)];
-    setTargetLetter(newLetter);
-    setRecognizedLetter(null);
-    setQuizStatus('waiting');
-    setError(null);
-  }, [language]);
+    const [language, setLanguage] = useState<Language | null>(null);
+    const [character, setCharacter] = useState<Character | null>(null);
 
-  useEffect(() => {
-    setRecognizedLetter(null);
-    setError(null);
-    setIsLoading(false);
+    // Sub-states for modes
+    const [letterMode, setLetterMode] = useState<'recognize' | 'quiz' | 'draw'>('recognize');
+    const [colorGame, setColorGame] = useState<'selection' | 'camera' | 'matching'>('selection');
+    const [numberGame, setNumberGame] = useState<'selection' | 'writing' | 'add-subtract' | 'multiply-divide'>('selection');
 
-    if (mode === 'quiz' || mode === 'typing') {
-      generateNewTargetLetter();
-    }
-    
-    if (mode === 'typing' || mode === 'words' || mode === 'sentences') {
-        if (mediaSource === 'video' && videoSrc) {
-            URL.revokeObjectURL(videoSrc);
-            setVideoSrc(null);
-        }
-        setMediaSource('none');
-    }
+    // State for letter recognition/quiz
+    const [recognizedLetter, setRecognizedLetter] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [targetLetter, setTargetLetter] = useState<string | null>(null);
+    const [quizStatus, setQuizStatus] = useState<'waiting' | 'correct' | 'incorrect' | null>('waiting');
+    const cameraFeedRef = useRef<CameraFeedHandle>(null);
+    const currentAlphabet = useMemo(() => language ? ALPHABETS[language] : [], [language]);
 
-  }, [mode, generateNewTargetLetter]);
-  
-  const handleLanguageSelect = (lang: Language) => {
-    playSound('click');
-    setLanguage(lang);
-  };
-
-  const handleCharacterSelect = (char: Character) => {
-    playSound('success');
-    setCharacter(char);
-    // Pre-load all letter sounds for the selected language and voice in the background
-    if (language) {
-      primeAlphabetCache(ALPHABETS[language], char.voiceName, language);
-    }
-  };
-
-  const handleRecognize = useCallback(async () => {
-    if (!cameraFeedRef.current || !language) return;
-    playSound('click');
-    const imageDataUrl = cameraFeedRef.current.captureFrame();
-
-    if (imageDataUrl) {
-      setIsLoading(true);
-      setError(null);
-      setRecognizedLetter(null);
-      try {
-        const letter = await recognizeLetter(imageDataUrl, ALPHABETS[language]);
-        setRecognizedLetter(letter);
-
-        if (mode === 'quiz' && targetLetter) {
-            if (letter.toUpperCase() === targetLetter.toUpperCase()) {
-                setQuizStatus('correct');
+    useEffect(() => {
+        try {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                setCurrentUser(JSON.parse(savedUser));
+                setAppState('lang_select');
             } else {
-                setQuizStatus('incorrect');
+                setAppState('user_login');
             }
+        } catch (error) {
+            console.error("Failed to load user:", error);
+            setAppState('user_login');
         }
+    }, []);
 
-      } catch (err) {
-        setError(err instanceof Error ? err.message : T('errorUnknown'));
-      } finally {
-        setIsLoading(false);
-      }
-    } else {
-      setError(T('errorCapture'));
-    }
-  }, [mode, targetLetter, language, T]);
-  
-  const toggleCamera = () => {
-    playSound('click');
-    if (mediaSource === 'camera') {
+    const handleLogin = (name: string, age: string) => {
+        const user = { name, age };
+        setCurrentUser(user);
+        try {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+        } catch (error) {
+            console.error("Failed to save user:", error);
+        }
+        setAppState('lang_select');
+    };
+    
+    const handleLogout = () => {
+        try {
+            localStorage.removeItem('currentUser');
+        } catch (error) {
+            console.error("Failed to remove user:", error);
+        }
+        setCurrentUser(null);
+        setLanguage(null);
+        setCharacter(null);
+        setAppState('user_login');
+        setInitialPath(null);
+        setMainMode('alphabet');
+        setLetterMode('recognize');
+        setColorGame('selection');
+        setNumberGame('selection');
+    };
+
+    const handleSelectAlphabetPath = (lang: Language) => {
+        setMainMode('alphabet');
+        setLanguage(lang);
+        setAppState('char_select');
+    };
+
+    const handleSelectColorsPath = () => {
+        setInitialPath('colors');
+        setAppState('lang_select');
+    };
+
+    const handleSelectNumbersPath = () => {
+        setInitialPath('numbers');
+        setAppState('lang_select');
+    };
+
+    const handleLanguageForPath = (lang: Language) => {
+        if (initialPath) {
+            setMainMode(initialPath);
+        }
+        setLanguage(lang);
+        setAppState('char_select');
+    };
+
+
+    const handleCharacterSelect = (char: Character) => {
+        setCharacter(char);
+        setAppState('main_app');
+    };
+
+    const handleNextQuiz = useCallback(() => {
+        setQuizStatus('waiting');
         setRecognizedLetter(null);
         setError(null);
-        setMediaSource('none');
-    } else {
-        setMediaSource('camera');
-    }
-  };
-  
-  const handleUploadClick = () => {
-    videoInputRef.current?.click();
-  };
+        const randomIndex = Math.floor(Math.random() * currentAlphabet.length);
+        setTargetLetter(currentAlphabet[randomIndex]);
+    }, [currentAlphabet]);
 
-  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      playSound('click');
-      const url = URL.createObjectURL(file);
-      if (videoSrc) {
-        URL.revokeObjectURL(videoSrc);
-      }
-      setVideoSrc(url);
-      setMediaSource('video');
-      setRecognizedLetter(null);
-      setError(null);
-    }
-  };
+    useEffect(() => {
+        if (appState === 'main_app' && mainMode === 'alphabet' && letterMode === 'quiz' && !targetLetter) {
+            handleNextQuiz();
+        }
+    }, [appState, mainMode, letterMode, targetLetter, handleNextQuiz]);
 
-  const removeVideo = () => {
-    playSound('click');
-    if (videoSrc) {
-      URL.revokeObjectURL(videoSrc);
-    }
-    setVideoSrc(null);
-    setMediaSource('none');
-    setRecognizedLetter(null);
-    setError(null);
-    if(videoInputRef.current) {
-        videoInputRef.current.value = "";
-    }
-  };
+    const handleRecognizeLetter = async () => {
+        if (isLoading || !cameraFeedRef.current) return;
+        playSound('click');
+        setIsLoading(true);
+        setError(null);
+        const imageDataUrl = cameraFeedRef.current.captureFrame();
+        if (imageDataUrl) {
+            try {
+                const letter = await recognizeLetter(imageDataUrl, currentAlphabet);
+                setRecognizedLetter(letter);
 
-  const handleModeChange = (newMode: Mode) => {
-    playSound('click');
-    if (mode !== newMode) {
-      setMode(newMode);
-    }
-  };
-  
-  const handleGoHome = () => {
-    playSound('click');
-    setLanguage(null);
-    setCharacter(null);
-  };
+                if (letterMode === 'quiz') {
+                    if (letter.toUpperCase() === targetLetter?.toUpperCase()) {
+                        setQuizStatus('correct');
+                    } else {
+                        setQuizStatus('incorrect');
+                    }
+                }
+            } catch (e: any) {
+                setError(e.message || 'An unknown error occurred.');
+                if (letterMode === 'quiz') setQuizStatus('incorrect');
+            } finally {
+                setIsLoading(false);
+            }
+        } else {
+            setError('Could not capture frame from camera.');
+            setIsLoading(false);
+            if (letterMode === 'quiz') setQuizStatus('incorrect');
+        }
+    };
 
-  if (!language) {
-    return <LanguageSelection onLanguageSelect={handleLanguageSelect} />;
-  }
+    const backgroundStyle = useMemo(() => {
+        if (character) {
+            return {
+                backgroundImage: `url("${character.bgImage}")`,
+                backgroundSize: 'cover',
+                backgroundRepeat: 'repeat',
+            };
+        }
+        return {};
+    }, [character]);
+    
+    const renderAppContent = () => {
+        if (appState !== 'main_app' || !language || !character || !currentUser) return null;
 
-  if (!character) {
-    return <CharacterSelection onCharacterSelect={handleCharacterSelect} language={language} />;
-  }
-
-  const SidebarButton: React.FC<{ currentMode: Mode; targetMode: Mode; onClick: (mode: Mode) => void; icon: React.ReactNode; text: string }> = ({ currentMode, targetMode, onClick, icon, text }) => (
-    <button
-      onClick={() => onClick(targetMode)}
-      className={`w-full flex items-center justify-start gap-3 px-4 py-3 rounded-lg font-semibold transition-all duration-300 text-base ${
-        currentMode === targetMode
-          ? 'bg-purple-500 text-white shadow-lg'
-          : 'bg-white/60 hover:bg-purple-100 text-slate-700'
-      }`}
-    >
-      {icon}
-      <span>{text}</span>
-    </button>
-  );
-
-  const showCameraControls = mode === 'recognize' || mode === 'quiz';
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-200 to-purple-300 flex flex-col items-center p-4 font-sans">
-      <div className="w-full max-w-6xl mx-auto">
-        <header className="relative text-center mb-6 bg-white/60 backdrop-blur-lg p-4 rounded-xl shadow-md">
-          <button
-            onClick={handleGoHome}
-            className="absolute top-1/2 -translate-y-1/2 left-4 bg-white/60 p-2 rounded-full text-slate-600 hover:bg-white hover:text-purple-600 transition-all"
-            aria-label={T('backToHome')}
-          >
-            <HomeIcon className="w-6 h-6" />
-          </button>
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-800 tracking-tight">
-            {T('title')}
-          </h1>
-          <p className="text-slate-600 mt-2 text-lg">
-            {T('subtitle')}
-          </p>
-          <div className="absolute top-1/2 -translate-y-1/2 right-4 bg-white/60 p-1 rounded-full shadow-md">
-             <img src={character.avatar} alt={character.name} className="w-12 h-12 rounded-full" />
-          </div>
-        </header>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* --- Left Sidebar --- */}
-          <aside className="w-full lg:w-1/3 xl:w-1/4 flex flex-col gap-6">
-            <div className="bg-white/60 backdrop-blur-lg p-4 rounded-xl shadow-lg">
-                <h2 className="text-xl font-bold text-slate-700 mb-4">{T('modes')}</h2>
-                <div className="flex flex-col gap-3">
-                    <SidebarButton currentMode={mode} targetMode="recognize" onClick={handleModeChange} icon={<SparklesIcon className="w-6 h-6" />} text={T('recognize')} />
-                    <SidebarButton currentMode={mode} targetMode="quiz" onClick={handleModeChange} icon={<QuestionMarkCircleIcon className="w-6 h-6" />} text={T('quiz')} />
-                    <SidebarButton currentMode={mode} targetMode="typing" onClick={handleModeChange} icon={<PencilIcon className="w-6 h-6" />} text={T('typing')} />
-                    <SidebarButton currentMode={mode} targetMode="words" onClick={handleModeChange} icon={<BookOpenIcon className="w-6 h-6" />} text={T('words')} />
-                    <SidebarButton currentMode={mode} targetMode="sentences" onClick={handleModeChange} icon={<ChatBubbleBottomCenterTextIcon className="w-6 h-6" />} text={T('sentences')} />
-                </div>
-            </div>
-
-            {showCameraControls && (
-                 <div className="bg-white/60 backdrop-blur-lg p-4 rounded-xl shadow-lg">
-                     <h2 className="text-xl font-bold text-slate-700 mb-4">{T('controls')}</h2>
-                     {mediaSource !== 'none' ? (
+        const mainContent = () => {
+            switch(mainMode) {
+                case 'alphabet':
+                    return (
                         <div className="flex flex-col gap-4">
-                            <button
-                                onClick={handleRecognize}
-                                disabled={isLoading}
-                                className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-purple-500 text-white font-bold text-lg rounded-lg shadow-lg hover:bg-purple-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100"
-                            >
-                                <SparklesIcon className="w-7 h-7" />
-                                {isLoading ? T('recognizing') : T('recognizeLetter')}
-                            </button>
-                            {mediaSource === 'camera' && (
-                                <button
-                                    onClick={toggleCamera}
-                                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-rose-500 text-white font-semibold rounded-lg shadow-md hover:bg-rose-600 transition-all"
-                                >
-                                    <PowerIcon className="w-6 h-6" />
-                                    {T('turnOffCamera')}
-                                </button>
-                            )}
-                            {mediaSource === 'video' && (
-                                 <button
-                                    onClick={removeVideo}
-                                    className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-rose-500 text-white font-semibold rounded-lg shadow-md hover:bg-rose-600 transition-all"
-                                >
-                                    <PowerIcon className="w-6 h-6" />
-                                    {T('removeVideo')}
-                                </button>
+                            <div className="flex justify-center bg-white/50 backdrop-blur-sm rounded-full p-2 gap-2 self-center">
+                                <SubModeButton label="Reconocer" active={letterMode === 'recognize'} onClick={() => { setLetterMode('recognize'); setRecognizedLetter(null); }} />
+                                <SubModeButton label="Quiz" active={letterMode === 'quiz'} onClick={() => { setLetterMode('quiz'); handleNextQuiz(); }} />
+                                <SubModeButton label="Dibujar" active={letterMode === 'draw'} onClick={() => { setLetterMode('draw'); if(!targetLetter) handleNextQuiz(); }} />
+                            </div>
+                            {letterMode === 'draw' ? (
+                                <TypingMode targetLetter={targetLetter || 'A'} onNextLetter={handleNextQuiz} language={language} alphabet={currentAlphabet} character={character} />
+                            ) : (
+                                <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                    <div className="flex flex-col gap-4">
+                                        <CameraFeed ref={cameraFeedRef} />
+                                        <button onClick={handleRecognizeLetter} disabled={isLoading} className="w-full py-3 text-lg font-bold text-white bg-purple-500 rounded-lg shadow-lg hover:bg-purple-600 transition-transform transform hover:scale-105 disabled:bg-slate-400">
+                                            {isLoading ? 'Analizando...' : 'Reconocer Letra'}
+                                        </button>
+                                    </div>
+                                    <ResultDisplay letter={recognizedLetter} isLoading={isLoading} error={error} mode={letterMode} quizStatus={quizStatus} targetLetter={targetLetter} onNextQuiz={handleNextQuiz} language={language} character={character} />
+                                </div>
                             )}
                         </div>
-                     ) : (
-                        <div className="flex flex-col gap-4">
-                            <button
-                                onClick={toggleCamera}
-                                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
-                            >
-                                <CameraIcon className="w-6 h-6" />
-                                {T('turnOnCamera')}
-                            </button>
-                            <button
-                                onClick={handleUploadClick}
-                                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            >
-                                <ArrowUpTrayIcon className="w-6 h-6" />
-                                {T('uploadVideo')}
-                            </button>
-                            <input
-                                type="file"
-                                ref={videoInputRef}
-                                onChange={handleVideoUpload}
-                                accept="video/*"
-                                className="hidden"
-                            />
-                        </div>
-                     )}
-                 </div>
-            )}
-          </aside>
+                    );
+                case 'words':
+                    return <WordsMode language={language} character={character} userName={currentUser.name} />;
+                case 'sentences':
+                    return <SentencesMode language={language} character={character} userName={currentUser.name} />;
+                case 'colors':
+                    if (colorGame === 'selection') return <ColorGameSelection onSelectGame={setColorGame} language={language} />;
+                    if (colorGame === 'camera') return <ColorsMode language={language} character={character} userName={currentUser.name} />;
+                    if (colorGame === 'matching') return <MatchingColorsMode language={language} character={character} userName={currentUser.name} />;
+                    return null;
+                case 'numbers':
+                    if (numberGame === 'selection') return <MathGameSelection onSelectGame={setNumberGame} language={language} />;
+                    if (numberGame === 'writing') return <NumberWritingMode language={language} character={character} userName={currentUser.name} />;
+                    if (numberGame === 'add-subtract' || numberGame === 'multiply-divide') return <ArithmeticMode language={language} character={character} operationType={numberGame} onBackToMainSelection={() => setNumberGame('selection')} userName={currentUser.name}/>;
+                    return null;
+                case 'progress':
+                    return <ProgressView userName={currentUser.name} language={language} />;
+                default:
+                    return null;
+            }
+        };
 
-          {/* --- Main Content Area --- */}
-          <main className="w-full lg:w-2/3 xl:w-3/4">
-            <div key={mode} className="animate-fadeIn">
-              {mode === 'typing' && <TypingMode key={targetLetter} targetLetter={targetLetter!} onNextLetter={generateNewTargetLetter} language={language} alphabet={ALPHABETS[language]} character={character} />}
-              {mode === 'words' && <WordsMode language={language} character={character} />}
-              {mode === 'sentences' && <SentencesMode language={language} character={character} />}
-              {showCameraControls && (
-                  <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-4 md:p-8 flex flex-col gap-8">
-                      <div className="flex-1 flex flex-col items-center justify-center bg-slate-100 rounded-xl p-4 min-h-[300px] lg:min-h-[480px]">
-                          {mediaSource !== 'none' ? (
-                              <CameraFeed ref={cameraFeedRef} videoSrc={videoSrc ?? undefined} />
-                          ) : (
-                              <div className="text-center p-8">
-                                  <CameraIcon className="w-24 h-24 text-slate-400 mx-auto" />
-                                  <p className="text-slate-500 mt-4 text-lg">{T('cameraOrVideo')}</p>
-                              </div>
-                          )}
-                      </div>
-                      <div className="bg-slate-50 rounded-xl p-6 shadow-inner">
-                          <h2 className="text-2xl font-bold text-slate-700 mb-4">
-                              {mode === 'recognize' && T('result')}
-                              {mode === 'quiz' && T('yourMission')}
-                          </h2>
-                          <ResultDisplay
-                              letter={recognizedLetter}
-                              isLoading={isLoading}
-                              error={error}
-                              mode={mode}
-                              quizStatus={quizStatus}
-                              targetLetter={targetLetter}
-                              onNextQuiz={generateNewTargetLetter}
-                              language={language}
-                              character={character}
-                          />
-                      </div>
-                  </div>
-              )}
+        return (
+            <div className="w-full max-w-7xl mx-auto flex flex-col md:flex-row gap-8 p-4 md:p-8">
+                <aside className="w-full md:w-64 bg-white/50 backdrop-blur-sm rounded-2xl p-6 shadow-lg flex flex-col gap-4 self-start">
+                   <div className="flex items-center gap-3 border-b pb-4">
+                       <UserIcon className="w-12 h-12 text-slate-500 flex-shrink-0" />
+                       <div>
+                           <p className="font-bold text-slate-700 text-lg">{currentUser.name}</p>
+                           <p className="text-sm text-slate-500">Edad: {currentUser.age}</p>
+                       </div>
+                   </div>
+                   <div className="flex items-center gap-3">
+                       <img src={character.avatar} alt={character.name} className="w-16 h-16 rounded-lg" />
+                       <div>
+                           <p className="font-bold text-slate-700 text-lg">{character.name}</p>
+                           <button onClick={() => { setCharacter(null); setAppState('char_select'); }} className="text-sm text-purple-600 hover:underline">Cambiar Guía</button>
+                       </div>
+                   </div>
+                   <nav className="flex flex-col gap-2 border-t pt-4">
+                       <ModeButton icon={<BookOpenIcon className="w-6 h-6"/>} label="Letras" active={mainMode === 'alphabet'} onClick={() => setMainMode('alphabet')} />
+                       <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label="Palabras" active={mainMode === 'words'} onClick={() => setMainMode('words')} />
+                       <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label="Oraciones" active={mainMode === 'sentences'} onClick={() => setMainMode('sentences')} />
+                       <ModeButton icon={<SwatchIcon className="w-6 h-6"/>} label="Colores" active={mainMode === 'colors'} onClick={() => { setMainMode('colors'); setColorGame('selection'); }} />
+                       <ModeButton icon={<HashtagIcon className="w-6 h-6"/>} label="Números" active={mainMode === 'numbers'} onClick={() => { setMainMode('numbers'); setNumberGame('selection'); }} />
+                       <ModeButton icon={<UserIcon className="w-6 h-6"/>} label="Progreso" active={mainMode === 'progress'} onClick={() => setMainMode('progress')} />
+                   </nav>
+                   <div className="border-t pt-4 mt-auto">
+                        <button onClick={handleLogout} className="w-full flex items-center gap-2 justify-center px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg font-semibold text-slate-700 shadow-sm">
+                            <ArrowLeftIcon className="w-5 h-5"/>
+                            <span>Cambiar Usuario</span>
+                        </button>
+                   </div>
+                </aside>
+                <main className="flex-1">{mainContent()}</main>
             </div>
-          </main>
+        );
+    };
+
+    const renderState = () => {
+        switch (appState) {
+            case 'user_login':
+                return <UserLogin onLogin={handleLogin} />;
+            case 'lang_select':
+                if (initialPath === null) {
+                    return <LanguageSelection 
+                        onAlphabetSelect={handleSelectAlphabetPath} 
+                        onColorsSelect={handleSelectColorsPath}
+                        onNumbersSelect={handleSelectNumbersPath}
+                    />;
+                } else {
+                    return <LanguageSelection
+                        currentPath={initialPath}
+                        onLanguageSelect={handleLanguageForPath}
+                    />
+                }
+            case 'char_select':
+                if (language) return <CharacterSelection onCharacterSelect={handleCharacterSelect} language={language} />;
+                handleLogout();
+                return null;
+            case 'main_app':
+                return renderAppContent();
+            default:
+                return null;
+        }
+    };
+    
+    return (
+        <div className="min-h-screen w-full transition-all duration-500 relative overflow-hidden" style={backgroundStyle}>
+            <DecorativeBackground />
+            <div className="min-h-screen w-full flex items-center justify-center relative z-10">
+              {renderState()}
+            </div>
         </div>
-
-        <footer className="text-center mt-8 text-slate-500 bg-white/60 p-2 rounded-lg">
-            <p>UMB ATENCO</p>
-        </footer>
-      </div>
-    </div>
-  );
+    );
 };
+
+const ModeButton: React.FC<{icon: React.ReactNode, label: string, active: boolean, onClick: () => void}> = ({icon, label, active, onClick}) => (
+    <button onClick={onClick} className={`flex items-center gap-4 p-3 rounded-lg text-left font-semibold transition-all ${active ? 'bg-purple-500 text-white shadow-md animate-pulse-glow' : 'text-slate-600 hover:bg-purple-100'}`}>
+        {icon}
+        <span>{label}</span>
+    </button>
+);
+const SubModeButton: React.FC<{label: string, active: boolean, onClick: () => void}> = ({label, active, onClick}) => (
+    <button onClick={onClick} className={`px-4 py-2 rounded-full font-semibold transition-all text-sm md:text-base ${active ? 'bg-purple-500 text-white' : 'bg-white text-slate-600 hover:bg-purple-100'}`}>
+        {label}
+    </button>
+);
 
 export default App;
