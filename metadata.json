@@ -1,0 +1,7 @@
+{
+  "name": "Reconocimiento de Letras",
+  "description": "Una aplicación web divertida y educativa que utiliza la visión artificial para ayudar en el aprendizaje de las letras del abecedario en Español, Inglés y Náhuatl.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

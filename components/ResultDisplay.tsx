@@ -1,0 +1,154 @@
+import React, { useEffect } from 'react';
+import { playSound, speakText, preloadSpeech } from '../services/soundService';
+import { getTranslation, Language } from '../services/i18n';
+import { Character } from '../services/characterService';
+
+interface ResultDisplayProps {
+  letter: string | null;
+  isLoading: boolean;
+  error: string | null;
+  mode: 'recognize' | 'quiz';
+  quizStatus: 'correct' | 'incorrect' | 'waiting' | null;
+  targetLetter: string | null;
+  onNextQuiz: () => void;
+  language: Language;
+  character: Character;
+}
+
+const LoadingSpinner: React.FC<{ language: Language }> = ({ language }) => {
+  const T = (key: string) => getTranslation(language, key);
+  return (
+    <div className="flex flex-col items-center justify-center text-center">
+      <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-500 mb-4"></div>
+      <p className="text-slate-600 font-semibold">{T('analyzing')}</p>
+      <p className="text-slate-500 text-sm">{T('identifyingLetter')}</p>
+    </div>
+  );
+};
+
+export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading, error, mode, quizStatus, targetLetter, onNextQuiz, language, character }) => {
+  const T = (key: string, replacements?: {[key: string]: string}) => getTranslation(language, key, replacements);
+
+  // Speak the target letter when a new quiz starts
+  useEffect(() => {
+    if (mode === 'quiz' && targetLetter && quizStatus === 'waiting') {
+      const instruction = T('findTheLetter', { letter: targetLetter });
+      const successMessage = T('correctIsLetter', { letter: targetLetter });
+      // Preload the success message for when the user gets it right.
+      preloadSpeech(successMessage, character.voiceName, language);
+      // Speak the instruction for the new letter.
+      speakText(instruction, character.voiceName, language);
+    }
+  }, [mode, targetLetter, quizStatus, language, T, character]);
+
+  // Handle results for quiz mode
+  useEffect(() => {
+    if (quizStatus === 'correct' && targetLetter) {
+      playSound('success');
+      // This should be faster now due to preloading when the quiz letter appeared.
+      speakText(T('correctIsLetter', { letter: targetLetter }), character.voiceName, language);
+    } else if (quizStatus === 'incorrect') {
+      playSound('error');
+    }
+  }, [quizStatus, targetLetter, language, T, character]);
+
+  // Handle results for recognize mode
+  useEffect(() => {
+    if (mode === 'recognize' && letter) {
+      if (letter === '?') {
+        playSound('error');
+      } else {
+        playSound('success');
+        speakText(letter, character.voiceName, language); // Pronounce the recognized letter
+      }
+    }
+  }, [letter, mode, character, language]);
+  
+  const handleNextQuiz = () => {
+    playSound('click');
+    onNextQuiz();
+  };
+
+  const renderContent = () => {
+    if (isLoading) {
+      return <LoadingSpinner language={language} />;
+    }
+    if (error) {
+      return (
+        <div className="text-center text-red-600 bg-red-100 p-4 rounded-lg animate-shake">
+          <p className="font-bold">{T('ohNo')}</p>
+          <p>{error}</p>
+        </div>
+      );
+    }
+
+    if (mode === 'quiz') {
+        if (quizStatus === 'correct') {
+            return (
+                <div className="text-center animate-scaleIn">
+                    <p className="text-2xl font-bold text-green-600">{T('correctExclamation')}</p>
+                    <p className="text-slate-600 mt-2">{T('youFoundLetter')}</p>
+                    <p className="text-8xl font-black text-green-500">{targetLetter}</p>
+                    <button
+                        onClick={handleNextQuiz}
+                        className="mt-4 px-6 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-all"
+                    >
+                        {T('nextLetter')}
+                    </button>
+                </div>
+            )
+        }
+        if (quizStatus === 'incorrect' && letter) {
+             return (
+                <div className="text-center animate-shake">
+                    <p className="text-2xl font-bold text-orange-600">{T('almost')}</p>
+                    <p className="text-slate-600 mt-2">
+                        {T('cameraSaw', { sawLetter: letter, targetLetter: targetLetter! })}
+                    </p>
+                    <p className="text-slate-500 mt-2">{T('keepTrying')}</p>
+                </div>
+            )
+        }
+        return (
+            <div className="text-center animate-scaleIn">
+                <p className="text-slate-600 text-lg mb-2">{T('findThisLetter')}</p>
+                <p className="text-9xl md:text-[10rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-600 to-slate-800 leading-none">
+                    {targetLetter}
+                </p>
+            </div>
+        )
+    }
+
+    // Default 'recognize' mode
+    if (letter) {
+      if (letter === '?') {
+        return (
+             <div className="text-center animate-shake">
+                <p className="text-8xl font-black text-slate-400">?</p>
+                <p className="mt-2 text-slate-600 font-semibold">{T('couldNotIdentify')}</p>
+                <p className="mt-1 text-sm text-slate-500">{T('tryCentering')}</p>
+            </div>
+        )
+      }
+      return (
+        <div className="text-center animate-scaleIn">
+            <p className="text-slate-600 text-lg mb-2">{T('itLooksLike')}</p>
+            <p className="text-9xl md:text-[12rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-emerald-400 leading-none">
+                {letter}
+            </p>
+        </div>
+      );
+    }
+    return (
+      <div className="text-center text-slate-500">
+        <p className="text-lg">{T('showAndRecognize')}</p>
+      </div>
+    );
+  };
+
+  return (
+    <div className="flex items-center justify-center h-full min-h-[200px] bg-slate-200/50 rounded-lg p-4">
+      {renderContent()}
+    </div>
+  );
+};
