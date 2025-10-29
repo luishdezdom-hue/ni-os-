@@ -5,6 +5,7 @@ import { speakText, playSound, preloadSpeech } from '../services/soundService';
 import { LockClosedIcon, CheckCircleIcon, SpeakerWaveIcon } from './Icons';
 import { getTranslation, Language } from '../services/i18n';
 import { Character } from '../services/characterService';
+import { TranslatedText } from './TranslatedText';
 
 type GamePhase = 'selection' | 'playing' | 'results';
 type AnswerStatus = 'playing' | 'correct' | 'incorrect';
@@ -105,7 +106,7 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
       setPhase('results');
       
       const nextLevel = level! + 1;
-      if (score >= PASSING_SCORE && nextLevel > highestUnlockedLevel && nextLevel <= TOTAL_LEVELS) {
+      if (score >= PASSING_SCORE && nextLevel > highestUnlockedLevel) {
           updateProgress(nextLevel);
           playSound('switch');
       }
@@ -144,12 +145,12 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
   if (phase === 'selection') {
     return (
       <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-2xl mx-auto flex flex-col items-center gap-6 animate-fadeIn">
-        <h2 className="text-3xl font-bold text-slate-800 text-center">{T('writeTheNumber')}</h2>
+        <h2 className="text-3xl font-bold text-slate-800 text-center"><TranslatedText language={language} textKey="writeTheNumber" /></h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
             {[1, 2, 3, 4].map(l => (
                 <button key={l} onClick={() => startLevel(l)} disabled={l > highestUnlockedLevel} className="p-6 text-white font-bold text-xl rounded-lg shadow-md transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 bg-purple-500 hover:bg-purple-600">
                     {l > highestUnlockedLevel && <LockClosedIcon className="w-5 h-5" />}
-                    <span>{T('level', { level: l.toString() })}</span>
+                    <TranslatedText language={language} textKey="level" replacements={{level: l.toString()}} />
                 </button>
             ))}
         </div>
@@ -161,21 +162,21 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
     const passed = lastScore >= PASSING_SCORE;
     return (
        <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-4 text-center animate-scaleIn">
-        <h2 className="text-3xl font-bold text-slate-800">{T('levelCompleted', { level: level!.toString() })}</h2>
-        <p className="text-xl text-slate-600">{T('yourScore')}</p>
+        <h2 className="text-3xl font-bold text-slate-800"><TranslatedText language={language} textKey="levelCompleted" replacements={{level: level!.toString()}} /></h2>
+        <p className="text-xl text-slate-600"><TranslatedText language={language} textKey="yourScore" /></p>
         <p className={`text-6xl font-black ${passed ? 'text-green-500' : 'text-red-500'}`}>{lastScore}%</p>
         {passed ? (
           <>
-            <p className="text-xl font-semibold text-green-600 mt-2">{T('excellentWork')}</p>
-            {level! < TOTAL_LEVELS && <p className="text-slate-600">{T('unlockedNextLevel')}</p>}
+            <p className="text-xl font-semibold text-green-600 mt-2"><TranslatedText language={language} textKey="excellentWork" /></p>
+            {level! < TOTAL_LEVELS && <p className="text-slate-600"><TranslatedText language={language} textKey="unlockedNextLevel" /></p>}
           </>
         ) : (
-          <p className="text-xl font-semibold text-orange-500 mt-2">{T('almostThere', { score: PASSING_SCORE.toString() })}</p>
+          <p className="text-xl font-semibold text-orange-500 mt-2"><TranslatedText language={language} textKey="almostThere" replacements={{score: PASSING_SCORE.toString()}} /></p>
         )}
         <div className="flex flex-col sm:flex-row gap-4 mt-6">
-          <button onClick={handleBackToSelection} className="px-6 py-3 bg-slate-500 text-white font-semibold rounded-lg shadow-md hover:bg-slate-600">{T('backToLevels')}</button>
-          {!passed && <button onClick={() => startLevel(level!)} className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-lg shadow-md hover:bg-orange-600">{T('retry')}</button>}
-          {passed && level! < TOTAL_LEVELS && <button onClick={() => startLevel(level! + 1)} className="px-6 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600">{T('nextLevel')}</button>}
+          <button onClick={handleBackToSelection} className="px-6 py-3 bg-slate-500 text-white font-semibold rounded-lg shadow-md hover:bg-slate-600"><TranslatedText language={language} textKey="backToLevels" /></button>
+          {!passed && <button onClick={() => startLevel(level!)} className="px-6 py-3 bg-orange-500 text-white font-semibold rounded-lg shadow-md hover:bg-orange-600"><TranslatedText language={language} textKey="retry" /></button>}
+          {passed && level! < TOTAL_LEVELS && <button onClick={() => startLevel(level! + 1)} className="px-6 py-3 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600"><TranslatedText language={language} textKey="nextLevel" /></button>}
         </div>
       </div>
     );
@@ -184,10 +185,10 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
   return (
     <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-4 animate-fadeIn">
         <div className="w-full flex justify-between items-center">
-            <button onClick={handleBackToSelection} className="text-slate-600 hover:text-slate-800 font-semibold">&larr; {T('back')}</button>
+            <button onClick={handleBackToSelection} className="text-slate-600 hover:text-slate-800 font-semibold">&larr; <TranslatedText language={language} textKey="back" /></button>
             <div className="text-right">
-                <p className="font-bold text-slate-700">{T('level', { level: level!.toString() })}</p>
-                <p className="text-sm text-slate-500">{T('problemOf', { current: (currentIndex + 1).toString(), total: NUMBERS_PER_LEVEL.toString() })}</p>
+                <p className="font-bold text-slate-700"><TranslatedText language={language} textKey="level" replacements={{level: level!.toString()}} /></p>
+                <p className="text-sm text-slate-500"><TranslatedText language={language} textKey="problemOf" replacements={{ current: (currentIndex + 1).toString(), total: NUMBERS_PER_LEVEL.toString() }} /></p>
             </div>
         </div>
         {currentNumber && (
@@ -210,7 +211,7 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
                     </button>
                 </div>
                 
-                <p className="text-slate-600">{T(language === 'nah' ? 'writeTheDigit' : 'numberAsWord')}</p>
+                <p className="text-slate-600"><TranslatedText language={language} textKey={language === 'nah' ? 'writeTheDigit' : 'numberAsWord'} /></p>
 
                 <div className="w-full flex flex-col items-center gap-2 min-h-[180px] justify-center">
                     <div className="relative w-full max-w-sm">
@@ -235,19 +236,19 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
                     <div className="h-16 flex flex-col items-center justify-center text-center">
                         {status === 'incorrect' && (
                             <div className="text-red-600 font-semibold animate-fadeIn">
-                                <p className="text-sm">{T('theCorrectNumberWas')}</p>
+                                <p className="text-sm"><TranslatedText language={language} textKey="theCorrectNumberWas" /></p>
                                 <p className="text-2xl">{language === 'nah' ? currentNumber.digit : currentNumber.name}</p>
                             </div>
                         )}
                          {status === 'correct' && (
                             <div className="text-green-600 font-semibold animate-scaleIn">
-                                <p className="text-2xl">{T('correctExclamation')}</p>
+                                <p className="text-2xl"><TranslatedText language={language} textKey="correctExclamation" /></p>
                             </div>
                         )}
                     </div>
 
                     <button onClick={checkAnswer} disabled={status !== 'playing' || userInput === ''} className="px-8 py-3 bg-purple-500 text-white font-bold text-lg rounded-lg shadow-md hover:bg-purple-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100">
-                        {T('check')}
+                        <TranslatedText language={language} textKey="check" />
                     </button>
                 </div>
             </div>

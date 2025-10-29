@@ -1,10 +1,13 @@
+
+
 import React, { useState, useEffect } from 'react';
 import { Language } from '../services/i18n';
 import { Character } from '../services/characterService';
 import { getExampleForLetter, LetterExample } from '../services/alphabetService';
-import { speakText, playSound, preloadSpeech } from '../services/soundService';
+import { speakText, playSound, primeAlphabetCache } from '../services/soundService';
 import { getTranslation } from '../services/i18n';
 import { SpeakerWaveIcon } from './Icons';
+import { TranslatedText } from './TranslatedText';
 
 interface AlphabetExplorerModeProps {
   language: Language;
@@ -17,25 +20,34 @@ export const AlphabetExplorerMode: React.FC<AlphabetExplorerModeProps> = ({ lang
     const [example, setExample] = useState<LetterExample | null>(null);
     const T = (key: string, replacements?: {[key: string]: string}) => getTranslation(language, key, replacements);
 
+    useEffect(() => {
+        // Prime the audio cache for the entire alphabet when the component loads or language/character changes.
+        // This will make subsequent playback instant.
+        if (alphabet.length > 0) {
+            primeAlphabetCache(alphabet, character.voiceName, language);
+        }
+    }, [alphabet, character, language]);
+
     const handleSelectLetter = (letter: string) => {
         playSound('click');
         const letterExample = getExampleForLetter(letter, language);
         setSelectedLetter(letter);
         setExample(letterExample);
         
-        // Preload the audio when the letter is selected for instant playback later
+        // Play the audio immediately upon selection.
+        // The audio should be cached from the useEffect hook above, so it will be fast.
         if (letterExample) {
             const textToSay = T('theLetterIs', { letter: letter, word: letterExample.word });
-            preloadSpeech(textToSay, character.voiceName, language);
+            speakText(textToSay, character.voiceName, language);
         } else {
-            preloadSpeech(letter, character.voiceName, language);
+            speakText(letter, character.voiceName, language);
         }
     };
 
     const handleSpeak = () => {
+        playSound('click'); // Add sound for consistency
         if (selectedLetter && example) {
             const textToSay = T('theLetterIs', { letter: selectedLetter, word: example.word });
-            // This should be instant now because of preloading
             speakText(textToSay, character.voiceName, language);
         } else if (selectedLetter) {
             speakText(selectedLetter, character.voiceName, language);
@@ -76,8 +88,9 @@ export const AlphabetExplorerMode: React.FC<AlphabetExplorerModeProps> = ({ lang
             <div className="w-full lg:w-1/2 flex items-center justify-center bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 min-h-[300px] lg:min-h-0">
                 {!selectedLetter ? (
                     <div className="text-center text-slate-600 animate-fadeIn">
-                        <p className="text-2xl font-semibold">{T('selectALetterToLearn')}</p>
-                        {language !== 'es-MX' && <p className="mt-1 text-slate-500">({getTranslation('es-MX', 'selectALetterToLearn')})</p>}
+                        <p className="text-2xl font-semibold">
+                            <TranslatedText language={language} textKey="selectALetterToLearn" />
+                        </p>
                     </div>
                 ) : (
                     <div className="text-center animate-scaleIn">

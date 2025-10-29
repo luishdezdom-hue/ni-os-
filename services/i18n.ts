@@ -26,6 +26,8 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     readyToPlay: '¡Listo para Jugar!',
     play: 'Jugar',
     learn: 'Aprender',
+    complete: '¡Completo!',
+    myProgress: 'Mi Progreso',
 
     // Language/Character Selection
     chooseYourGuide: 'Elige tu Guía',
@@ -116,6 +118,32 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     learnDivisionDesc: 'La división es repartir un número en partes iguales. Como compartir dulces con tus amigos.',
     divideExample1: '10 ÷ 2 = 5  (10 dulces para 2 amigos)',
     divideExample2: '9 ÷ 3 = 3',
+
+    // App Navigation & Buttons
+    navLetters: 'Letras',
+    navWords: 'Palabras',
+    navSentences: 'Oraciones',
+    navColors: 'Colores',
+    navNumbers: 'Números',
+    navProgress: 'Progreso',
+    navChangeGuide: 'Cambiar Guía',
+    navChangeLanguage: 'Cambiar Idioma',
+    navChangeUser: 'Cambiar Usuario',
+    subModeRecognize: 'Reconocer',
+    subModeQuiz: 'Quiz',
+    subModeDraw: 'Dibujar',
+    btnRecognizeLetter: 'Reconocer Letra',
+    btnAnalyzing: 'Analizando...',
+
+    // Progress View
+    progressLevelOf: 'Nivel {current} / {total}',
+    progressWords: 'Palabras',
+    progressSentences: 'Oraciones',
+    progressColorsCamera: 'Colores (Cámara)',
+    progressColorsMatching: 'Colores (Unir)',
+    progressNumbersWriting: 'Números (Escritura)',
+    progressAddSubtract: 'Sumas y Restas',
+    progressMultiplyDivide: 'Multiplicación y División',
   },
   'en-US': {
     // General
@@ -141,6 +169,8 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     readyToPlay: 'Ready to Play!',
     play: 'Play',
     learn: 'Learn',
+    complete: 'Complete!',
+    myProgress: 'My Progress',
 
     // Language/Character Selection
     chooseYourGuide: 'Choose Your Guide',
@@ -231,6 +261,32 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     learnDivisionDesc: 'Division is splitting a number into equal parts. Like sharing candy with your friends.',
     divideExample1: '10 ÷ 2 = 5  (10 candies for 2 friends)',
     divideExample2: '9 ÷ 3 = 3',
+
+    // App Navigation & Buttons
+    navLetters: 'Letters',
+    navWords: 'Words',
+    navSentences: 'Sentences',
+    navColors: 'Colors',
+    navNumbers: 'Numbers',
+    navProgress: 'Progress',
+    navChangeGuide: 'Change Guide',
+    navChangeLanguage: 'Change Language',
+    navChangeUser: 'Change User',
+    subModeRecognize: 'Recognize',
+    subModeQuiz: 'Quiz',
+    subModeDraw: 'Draw',
+    btnRecognizeLetter: 'Recognize Letter',
+    btnAnalyzing: 'Analyzing...',
+
+    // Progress View
+    progressLevelOf: 'Level {current} / {total}',
+    progressWords: 'Words',
+    progressSentences: 'Sentences',
+    progressColorsCamera: 'Colors (Camera)',
+    progressColorsMatching: 'Colors (Matching)',
+    progressNumbersWriting: 'Numbers (Writing)',
+    progressAddSubtract: 'Add & Subtract',
+    progressMultiplyDivide: 'Multiply & Divide',
   },
   'nah': {
     // NOTE: These are simplified translations.
@@ -257,6 +313,8 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     readyToPlay: '¡Timochihua!',
     play: 'Mahualtîltia',
     learn: 'Momachtia',
+    complete: '¡Otlamic!',
+    myProgress: 'No Nepantla',
 
     // Language/Character Selection
     chooseYourGuide: 'Tlapejpeni Mo Yakanke',
@@ -347,6 +405,32 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     learnDivisionDesc: 'Tlaxeloa quixeloa ce tlapoalli.',
     divideExample1: '10 ÷ 2 = 5',
     divideExample2: '9 ÷ 3 = 3',
+
+    // App Navigation & Buttons
+    navLetters: 'Letras',
+    navWords: 'Tlahtolmej',
+    navSentences: 'Tlahtolpamitl',
+    navColors: 'Tlapalmej',
+    navNumbers: 'Tlapoalmej',
+    navProgress: 'Nepantla',
+    navChangeGuide: 'Patla Yakanke',
+    navChangeLanguage: 'Patla Tlahtolli',
+    navChangeUser: 'Patla Tlacatl',
+    subModeRecognize: 'Tixmati',
+    subModeQuiz: 'Tlatzotzonalli',
+    subModeDraw: 'Tlahcuiloa',
+    btnRecognizeLetter: 'Tixmati Letra',
+    btnAnalyzing: 'Tlanemililo...',
+
+    // Progress View
+    progressLevelOf: 'Nepantla {current} / {total}',
+    progressWords: 'Tlahtolmej',
+    progressSentences: 'Tlahtolpamitl',
+    progressColorsCamera: 'Tlapalmej (Cámara)',
+    progressColorsMatching: 'Tlapalmej (Tlanamiqui)',
+    progressNumbersWriting: 'Tlapoalmej (Tlahcuiloa)',
+    progressAddSubtract: 'Tlacepahua & Tlatlacui',
+    progressMultiplyDivide: 'Tlamichihua & Tlaxeloa',
   },
   'pt-BR': {
     // General
@@ -372,6 +456,8 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     readyToPlay: 'Pronto para Jogar!',
     play: 'Jogar',
     learn: 'Aprender',
+    complete: 'Completo!',
+    myProgress: 'Meu Progresso',
 
     // Language/Character Selection
     chooseYourGuide: 'Escolha seu Guia',
@@ -419,6 +505,14 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     listenToWordSpelled: 'Ouvir a palavra soletrada',
     theCorrectWordWas: 'A palavra correta era:',
     
+    // Sentences Mode
+    sentencesMode: 'Modo Orações',
+    completeTheSentence: 'Complete a Oração',
+    sentenceOf: 'Oração {current} de {total}',
+    nextSentence: 'Próxima Oração',
+    viewResults: 'Ver Resultados',
+    tryAgain: 'Tente de novo.',
+    
     // Colors Mode
     colorsMode: 'Modo Cores',
     findTheColor: 'Encontre a cor {color}',
@@ -454,6 +548,32 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     learnDivisionDesc: 'A divisão é repartir um número em partes iguais. Como compartilhar doces com seus amigos.',
     divideExample1: '10 ÷ 2 = 5 (10 doces para 2 amigos)',
     divideExample2: '9 ÷ 3 = 3',
+
+    // App Navigation & Buttons
+    navLetters: 'Letras',
+    navWords: 'Palavras',
+    navSentences: 'Orações',
+    navColors: 'Cores',
+    navNumbers: 'Números',
+    navProgress: 'Progresso',
+    navChangeGuide: 'Mudar Guia',
+    navChangeLanguage: 'Mudar Idioma',
+    navChangeUser: 'Mudar Usuário',
+    subModeRecognize: 'Reconhecer',
+    subModeQuiz: 'Quiz',
+    subModeDraw: 'Desenhar',
+    btnRecognizeLetter: 'Reconhecer Letra',
+    btnAnalyzing: 'Analisando...',
+
+    // Progress View
+    progressLevelOf: 'Nível {current} / {total}',
+    progressWords: 'Palavras',
+    progressSentences: 'Orações',
+    progressColorsCamera: 'Cores (Câmera)',
+    progressColorsMatching: 'Cores (Combinar)',
+    progressNumbersWriting: 'Números (Escrita)',
+    progressAddSubtract: 'Soma e Subtração',
+    progressMultiplyDivide: 'Multiplicação e Divisão',
   },
 };
 

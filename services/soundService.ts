@@ -1,6 +1,7 @@
 
 import { GoogleGenAI, Modality } from "@google/genai";
-import { Language } from './i18n';
+import { Language, getTranslation } from './i18n';
+import { getExampleForLetter } from './alphabetService';
 
 // Sound effects are small, silent WAV files to avoid network requests while providing audio feedback hooks.
 const sounds: { [key: string]: HTMLAudioElement } = {
@@ -163,10 +164,20 @@ export const preloadSpeech = (text: string, voiceName: string, language: Languag
 export const primeAlphabetCache = (alphabet: string[], voiceName: string, language: Language) => {
   if (typeof window === 'undefined' || !alphabet || !voiceName) return;
   
-  console.log(`Priming cache for ${alphabet.length} letters with voice ${voiceName}...`);
-  const primingPromises = alphabet.map(letter => getAudioBuffer(letter, voiceName, language));
+  console.log(`Priming cache for ${alphabet.length} letters and words with voice ${voiceName}...`);
+  const T = (key: string, replacements?: {[key: string]: string}) => getTranslation(language, key, replacements);
+  
+  const primingPromises = alphabet.map(letter => {
+      const example = getExampleForLetter(letter, language);
+      if (example) {
+          const textToSay = T('theLetterIs', { letter, word: example.word });
+          return getAudioBuffer(textToSay, voiceName, language);
+      }
+      return getAudioBuffer(letter, voiceName, language);
+  });
+
   Promise.all(primingPromises).then(() => {
-    console.log("Alphabet cache priming complete.");
+    console.log("Alphabet and words cache priming complete.");
   }).catch(err => {
     console.error("Error during alphabet cache priming:", err);
   });

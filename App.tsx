@@ -23,6 +23,7 @@ import { UserLogin } from './components/UserLogin';
 import { ProgressView } from './components/ProgressView';
 import { AlphabetExplorerMode } from './components/AlphabetExplorerMode';
 import { getTranslation } from './services/i18n';
+import { TranslatedText } from './components/TranslatedText';
 
 type AppState = 'user_login' | 'lang_select' | 'char_select' | 'main_app';
 type MainMode = 'alphabet' | 'alphabet_explorer' | 'words' | 'sentences' | 'colors' | 'numbers' | 'progress';
@@ -216,7 +217,6 @@ const App: React.FC = () => {
     
     const renderAppContent = () => {
         if (appState !== 'main_app' || !language || !character || !currentUser) return null;
-        const T = (key: string) => getTranslation(language, key);
 
         const mainContent = () => {
             if (mainMode === 'sentences' && language === 'pt-BR') {
@@ -227,9 +227,9 @@ const App: React.FC = () => {
                     return (
                         <div className="flex flex-col gap-4">
                             <div className="flex justify-center bg-white/50 backdrop-blur-sm rounded-full p-2 gap-2 self-center">
-                                <SubModeButton label="Reconocer" active={letterMode === 'recognize'} onClick={() => { setLetterMode('recognize'); setRecognizedLetter(null); }} />
-                                <SubModeButton label="Quiz" active={letterMode === 'quiz'} onClick={() => { setLetterMode('quiz'); handleNextQuiz(); }} />
-                                <SubModeButton label="Dibujar" active={letterMode === 'draw'} onClick={() => { setLetterMode('draw'); if(!targetLetter) handleNextQuiz(); }} />
+                                <SubModeButton label={<TranslatedText language={language} textKey="subModeRecognize" />} active={letterMode === 'recognize'} onClick={() => { setLetterMode('recognize'); setRecognizedLetter(null); }} />
+                                <SubModeButton label={<TranslatedText language={language} textKey="subModeQuiz" />} active={letterMode === 'quiz'} onClick={() => { setLetterMode('quiz'); handleNextQuiz(); }} />
+                                <SubModeButton label={<TranslatedText language={language} textKey="subModeDraw" />} active={letterMode === 'draw'} onClick={() => { setLetterMode('draw'); if(!targetLetter) handleNextQuiz(); }} />
                             </div>
                             {letterMode === 'draw' ? (
                                 <TypingMode targetLetter={targetLetter || 'A'} onNextLetter={handleNextQuiz} language={language} alphabet={currentAlphabet} character={character} />
@@ -238,7 +238,7 @@ const App: React.FC = () => {
                                     <div className="flex flex-col gap-4">
                                         <CameraFeed ref={cameraFeedRef} />
                                         <button onClick={handleRecognizeLetter} disabled={isLoading} className="w-full py-3 text-lg font-bold text-white bg-purple-500 rounded-lg shadow-lg hover:bg-purple-600 transition-transform transform hover:scale-105 disabled:bg-slate-400">
-                                            {isLoading ? 'Analizando...' : 'Reconocer Letra'}
+                                            <TranslatedText language={language} textKey={isLoading ? 'btnAnalyzing' : 'btnRecognizeLetter'} />
                                         </button>
                                     </div>
                                     <ResultDisplay letter={recognizedLetter} isLoading={isLoading} error={error} mode={letterMode} quizStatus={quizStatus} targetLetter={targetLetter} onNextQuiz={handleNextQuiz} language={language} character={character} />
@@ -263,7 +263,7 @@ const App: React.FC = () => {
                     if (numberGame === 'add-subtract' || numberGame === 'multiply-divide') return <ArithmeticMode language={language} character={character} operationType={numberGame} onBackToMainSelection={() => setNumberGame('selection')} userName={currentUser.name}/>;
                     return null;
                 case 'progress':
-                    return <ProgressView userName={currentUser.name} language={language} />;
+                    return <ProgressView userName={currentUser.name} language={language} character={character} />;
                 default:
                     return null;
             }
@@ -283,26 +283,28 @@ const App: React.FC = () => {
                        <img src={character.avatar} alt={character.name} className="w-16 h-16 rounded-lg" />
                        <div>
                            <p className="font-bold text-slate-700 text-lg">{character.name}</p>
-                           <button onClick={() => { setCharacter(null); setAppState('char_select'); }} className="text-sm text-purple-600 hover:underline">Cambiar Guía</button>
+                           <button onClick={() => { setCharacter(null); setAppState('char_select'); }} className="text-sm text-purple-600 hover:underline">
+                                <TranslatedText language={language} textKey="navChangeGuide" />
+                           </button>
                        </div>
                    </div>
                    <nav className="flex flex-col gap-2 border-t pt-4">
-                       <ModeButton icon={<BookOpenIcon className="w-6 h-6"/>} label="Letras" active={mainMode === 'alphabet'} onClick={() => setMainMode('alphabet')} />
-                       <ModeButton icon={<SparklesIcon className="w-6 h-6"/>} label={T('alphabetExplorer')} active={mainMode === 'alphabet_explorer'} onClick={() => setMainMode('alphabet_explorer')} />
-                       <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label="Palabras" active={mainMode === 'words'} onClick={() => setMainMode('words')} />
-                       {language !== 'pt-BR' && <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label="Oraciones" active={mainMode === 'sentences'} onClick={() => setMainMode('sentences')} />}
-                       <ModeButton icon={<SwatchIcon className="w-6 h-6"/>} label="Colores" active={mainMode === 'colors'} onClick={() => { setMainMode('colors'); setColorGame('selection'); }} />
-                       <ModeButton icon={<HashtagIcon className="w-6 h-6"/>} label="Números" active={mainMode === 'numbers'} onClick={() => { setMainMode('numbers'); setNumberGame('selection'); }} />
-                       <ModeButton icon={<UserIcon className="w-6 h-6"/>} label="Progreso" active={mainMode === 'progress'} onClick={() => setMainMode('progress')} />
+                       <ModeButton icon={<BookOpenIcon className="w-6 h-6"/>} label={<TranslatedText language={language} textKey="navLetters" />} active={mainMode === 'alphabet'} onClick={() => setMainMode('alphabet')} />
+                       <ModeButton icon={<SparklesIcon className="w-6 h-6"/>} label={<TranslatedText language={language} textKey="alphabetExplorer" />} active={mainMode === 'alphabet_explorer'} onClick={() => setMainMode('alphabet_explorer')} />
+                       <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label={<TranslatedText language={language} textKey="navWords" />} active={mainMode === 'words'} onClick={() => setMainMode('words')} />
+                       {language !== 'pt-BR' && <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label={<TranslatedText language={language} textKey="navSentences" />} active={mainMode === 'sentences'} onClick={() => setMainMode('sentences')} />}
+                       <ModeButton icon={<SwatchIcon className="w-6 h-6"/>} label={<TranslatedText language={language} textKey="navColors" />} active={mainMode === 'colors'} onClick={() => { setMainMode('colors'); setColorGame('selection'); }} />
+                       <ModeButton icon={<HashtagIcon className="w-6 h-6"/>} label={<TranslatedText language={language} textKey="navNumbers" />} active={mainMode === 'numbers'} onClick={() => { setMainMode('numbers'); setNumberGame('selection'); }} />
+                       <ModeButton icon={<UserIcon className="w-6 h-6"/>} label={<TranslatedText language={language} textKey="navProgress" />} active={mainMode === 'progress'} onClick={() => setMainMode('progress')} />
                    </nav>
                    <div className="border-t pt-4 mt-auto flex flex-col gap-2">
                         <button onClick={handleBackToLangSelect} className="w-full flex items-center gap-2 justify-center px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg font-semibold text-slate-700 shadow-sm">
                             <GlobeAltIcon className="w-5 h-5"/>
-                            <span>Cambiar Idioma</span>
+                            <TranslatedText language={language} textKey="navChangeLanguage" />
                         </button>
                         <button onClick={handleLogout} className="w-full flex items-center gap-2 justify-center px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg font-semibold text-slate-700 shadow-sm">
                             <ArrowLeftIcon className="w-5 h-5"/>
-                            <span>Cambiar Usuario</span>
+                            <TranslatedText language={language} textKey="navChangeUser" />
                         </button>
                    </div>
                 </aside>
@@ -349,13 +351,13 @@ const App: React.FC = () => {
     );
 };
 
-const ModeButton: React.FC<{icon: React.ReactNode, label: string, active: boolean, onClick: () => void}> = ({icon, label, active, onClick}) => (
+const ModeButton: React.FC<{icon: React.ReactNode, label: React.ReactNode, active: boolean, onClick: () => void}> = ({icon, label, active, onClick}) => (
     <button onClick={onClick} className={`flex items-center gap-4 p-3 rounded-lg text-left font-semibold transition-all ${active ? 'bg-purple-500 text-white shadow-md animate-pulse-glow' : 'text-slate-600 hover:bg-purple-100'}`}>
         {icon}
         <span>{label}</span>
     </button>
 );
-const SubModeButton: React.FC<{label: string, active: boolean, onClick: () => void}> = ({label, active, onClick}) => (
+const SubModeButton: React.FC<{label: React.ReactNode, active: boolean, onClick: () => void}> = ({label, active, onClick}) => (
     <button onClick={onClick} className={`px-4 py-2 rounded-full font-semibold transition-all text-sm md:text-base ${active ? 'bg-purple-500 text-white' : 'bg-white text-slate-600 hover:bg-purple-100'}`}>
         {label}
     </button>

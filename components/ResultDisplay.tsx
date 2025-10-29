@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { playSound, speakText, preloadSpeech } from '../services/soundService';
 import { getTranslation, Language } from '../services/i18n';
 import { Character } from '../services/characterService';
+import { TranslatedText } from './TranslatedText';
 
 interface ResultDisplayProps {
   letter: string | null;
@@ -16,18 +17,15 @@ interface ResultDisplayProps {
 }
 
 const LoadingSpinner: React.FC<{ language: Language }> = ({ language }) => {
-  const T = (key: string) => getTranslation(language, key);
   return (
     <div className="flex flex-col items-center justify-center text-center">
       <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-purple-500 mb-4"></div>
       <p className="text-slate-600 font-semibold">
-        {T('analyzing')}
-        {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'analyzing')})</span>}
+        <TranslatedText language={language} textKey="analyzing" />
       </p>
 
       <p className="text-slate-500 text-sm">
-        {T('identifyingLetter')}
-        {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5">({getTranslation('es-MX', 'identifyingLetter')})</span>}
+        <TranslatedText language={language} textKey="identifyingLetter" />
       </p>
     </div>
   );
@@ -84,8 +82,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
       return (
         <div className="text-center text-red-600 bg-red-100 p-4 rounded-lg animate-shake">
           <p className="font-bold">
-            {T('ohNo')}
-            {language !== 'es-MX' && <span className="block text-sm font-normal text-red-500 mt-0.5">({getTranslation('es-MX', 'ohNo')})</span>}
+            <TranslatedText language={language} textKey="ohNo" subtitleClassName="block text-sm font-normal text-red-500 mt-0.5" />
           </p>
           <p>{error}</p>
         </div>
@@ -97,22 +94,17 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
             return (
                 <div className="text-center animate-scaleIn">
                     <p className="text-2xl font-bold text-green-600">
-                        {T('correctExclamation')}
-                        {language !== 'es-MX' && <span className="block text-sm font-normal text-green-500 mt-0.5">({getTranslation('es-MX', 'correctExclamation')})</span>}
+                        <TranslatedText language={language} textKey="correctExclamation" subtitleClassName="block text-sm font-normal text-green-500 mt-0.5" />
                     </p>
                     <p className="text-slate-600 mt-2">
-                        {T('youFoundLetter')}
-                        {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'youFoundLetter')})</span>}
+                        <TranslatedText language={language} textKey="youFoundLetter" />
                     </p>
                     <p className="text-8xl font-black text-green-500">{targetLetter}</p>
                     <button
                         onClick={handleNextQuiz}
                         className="mt-4 px-6 py-2 bg-purple-500 text-white font-semibold rounded-lg shadow-md hover:bg-purple-600 transition-all"
                     >
-                        <span className="text-center">
-                            {T('nextLetter')}
-                            {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', 'nextLetter')})</span>}
-                        </span>
+                        <TranslatedText language={language} textKey="nextLetter" />
                     </button>
                 </div>
             )
@@ -121,16 +113,13 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
              return (
                 <div className="text-center animate-shake">
                     <p className="text-2xl font-bold text-orange-600">
-                        {T('almost')}
-                        {language !== 'es-MX' && <span className="block text-sm font-normal text-orange-500 mt-0.5">({getTranslation('es-MX', 'almost')})</span>}
+                        <TranslatedText language={language} textKey="almost" subtitleClassName="block text-sm font-normal text-orange-500 mt-0.5" />
                     </p>
                     <p className="text-slate-600 mt-2">
-                        {T('cameraSaw', { sawLetter: letter, targetLetter: targetLetter! })}
-                        {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'cameraSaw', { sawLetter: letter, targetLetter: targetLetter! })})</span>}
+                        <TranslatedText language={language} textKey="cameraSaw" replacements={{ sawLetter: letter, targetLetter: targetLetter! }} />
                     </p>
                     <p className="text-slate-500 mt-2">
-                        {T('keepTrying')}
-                        {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'keepTrying')})</span>}
+                        <TranslatedText language={language} textKey="keepTrying" />
                     </p>
                 </div>
             )
@@ -138,8 +127,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
         return (
             <div className="text-center animate-scaleIn">
                 <p className="text-slate-600 text-lg mb-2">
-                    {T('findThisLetter')}
-                    {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'findThisLetter')})</span>}
+                    <TranslatedText language={language} textKey="findThisLetter" />
                 </p>
                 <p className="text-9xl md:text-[10rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 leading-none">
                     {targetLetter}
@@ -155,12 +143,10 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
              <div className="text-center animate-shake">
                 <p className="text-8xl font-black text-slate-400">?</p>
                 <p className="mt-2 text-slate-600 font-semibold">
-                    {T('couldNotIdentify')}
-                    {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'couldNotIdentify')})</span>}
+                    <TranslatedText language={language} textKey="couldNotIdentify" />
                 </p>
                 <p className="mt-1 text-sm text-slate-500">
-                    {T('tryCentering')}
-                    {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'tryCentering')})</span>}
+                    <TranslatedText language={language} textKey="tryCentering" />
                 </p>
             </div>
         )
@@ -168,8 +154,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
       return (
         <div className="text-center animate-scaleIn">
             <p className="text-slate-600 text-lg mb-2">
-                {T('itLooksLike')}
-                {language !== 'es-MX' && <span className="block text-xs font-normal text-slate-500 mt-0.5">({getTranslation('es-MX', 'itLooksLike')})</span>}
+                <TranslatedText language={language} textKey="itLooksLike" />
             </p>
             <p className="text-9xl md:text-[12rem] font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 leading-none">
                 {letter}
@@ -180,8 +165,7 @@ export const ResultDisplay: React.FC<ResultDisplayProps> = ({ letter, isLoading,
     return (
       <div className="text-center text-slate-500">
         <p className="text-lg">
-          {T('showAndRecognize')}
-          {language !== 'es-MX' && <span className="block text-sm font-normal mt-1">({getTranslation('es-MX', 'showAndRecognize')})</span>}
+          <TranslatedText language={language} textKey="showAndRecognize" />
         </p>
       </div>
     );

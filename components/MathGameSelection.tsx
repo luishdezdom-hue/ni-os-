@@ -2,6 +2,7 @@
 import React from 'react';
 import { getTranslation, Language } from '../services/i18n';
 import { PlusMinusIcon, XMarkIcon, DivideIcon, PaintBrushIcon } from './Icons';
+import { TranslatedText } from './TranslatedText';
 
 interface MathGameSelectionProps {
     onSelectGame: (gameType: 'add-subtract' | 'multiply-divide' | 'writing') => void;
@@ -10,10 +11,9 @@ interface MathGameSelectionProps {
 
 const GameCard: React.FC<{
   onClick: () => void;
-  title: string;
-  subtitle?: string;
+  title: React.ReactNode;
   icon: React.ReactNode;
-}> = ({ onClick, title, subtitle, icon }) => (
+}> = ({ onClick, title, icon }) => (
   <button
     onClick={onClick}
     className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 w-full text-center transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:bg-white group flex flex-col items-center justify-center gap-4"
@@ -23,30 +23,25 @@ const GameCard: React.FC<{
     </div>
     <div>
       <h2 className="text-2xl font-bold text-slate-800">{title}</h2>
-      {subtitle && <p className="text-slate-500">{subtitle}</p>}
     </div>
   </button>
 );
 
 
 export const MathGameSelection: React.FC<MathGameSelectionProps> = ({ onSelectGame, language }) => {
-    const T = (key: string) => getTranslation(language, key);
-
     return (
         <div className="w-full max-w-4xl mx-auto flex flex-col items-center gap-8 animate-fadeIn">
              <div className="w-full">
                 <GameCard
                     onClick={() => onSelectGame('writing')}
-                    title={T('writeTheNumber')}
-                    subtitle={language !== 'es-MX' ? `(${getTranslation('es-MX', 'writeTheNumber')})` : undefined}
+                    title={<TranslatedText language={language} textKey="writeTheNumber" />}
                     icon={<PaintBrushIcon className="w-20 h-20" />}
                 />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
                 <GameCard
                     onClick={() => onSelectGame('add-subtract')}
-                    title={T('addAndSubtract')}
-                    subtitle={language !== 'es-MX' ? `(${getTranslation('es-MX', 'addAndSubtract')})` : undefined}
+                    title={<TranslatedText language={language} textKey="addAndSubtract" />}
                     icon={
                         <div className="relative w-20 h-20">
                             <PlusMinusIcon className="w-20 h-20" />
@@ -55,8 +50,7 @@ export const MathGameSelection: React.FC<MathGameSelectionProps> = ({ onSelectGa
                 />
                 <GameCard
                     onClick={() => onSelectGame('multiply-divide')}
-                    title={T('multiplyAndDivide')}
-                    subtitle={language !== 'es-MX' ? `(${getTranslation('es-MX', 'multiplyAndDivide')})` : undefined}
+                    title={<TranslatedText language={language} textKey="multiplyAndDivide" />}
                      icon={
                         <div className="relative w-20 h-20">
                            <XMarkIcon className="w-12 h-12 absolute top-0 left-0" />

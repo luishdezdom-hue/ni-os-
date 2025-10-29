@@ -4,6 +4,7 @@ import { speakText, playSound, preloadSpeech } from '../services/soundService';
 import { LockClosedIcon } from './Icons';
 import { getTranslation, Language } from '../services/i18n';
 import { Character } from '../services/characterService';
+import { TranslatedText } from './TranslatedText';
 
 type GamePhase = 'selection' | 'playing' | 'results';
 type Connection = { from: number, to: number, status: 'correct' | 'incorrect' };
@@ -108,7 +109,7 @@ export const MatchingColorsMode: React.FC<MatchingColorsModeProps> = ({ language
         setLastScore(score);
         setPhase('results');
         const nextLevel = level! + 1;
-        if (nextLevel > highestUnlockedLevel && nextLevel <= 4) {
+        if (nextLevel > highestUnlockedLevel) {
             updateProgress(nextLevel);
             playSound('switch');
         }
@@ -134,12 +135,12 @@ export const MatchingColorsMode: React.FC<MatchingColorsModeProps> = ({ language
   if (phase === 'selection') {
     return (
       <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-2xl mx-auto flex flex-col items-center gap-6 animate-fadeIn">
-        <h2 className="text-3xl font-bold text-slate-800 text-center">{T('matchTheColor')}</h2>
+        <h2 className="text-3xl font-bold text-slate-800 text-center"><TranslatedText language={language} textKey="matchTheColor" /></h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">
             {[1, 2, 3, 4].map(l => (
                  <button key={l} onClick={() => startLevel(l)} disabled={l > highestUnlockedLevel} className="p-6 text-white font-bold text-xl rounded-lg shadow-md transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100 flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600">
                     {l > highestUnlockedLevel && <LockClosedIcon className="w-5 h-5" />}
-                    <span>{T('level', { level: l.toString() })}</span>
+                    <TranslatedText language={language} textKey="level" replacements={{ level: l.toString() }} />
                 </button>
             ))}
         </div>
@@ -151,13 +152,13 @@ export const MatchingColorsMode: React.FC<MatchingColorsModeProps> = ({ language
     const isLastLevel = level === 4;
     return (
       <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-8 w-full max-w-lg mx-auto flex flex-col items-center gap-4 text-center animate-scaleIn">
-        <h2 className="text-3xl font-bold text-slate-800">{T('levelCompleted', { level: level!.toString() })}</h2>
+        <h2 className="text-3xl font-bold text-slate-800"><TranslatedText language={language} textKey="levelCompleted" replacements={{ level: level!.toString() }} /></h2>
         <p className={`text-6xl font-black text-green-500`}>{lastScore}%</p>
-        <p className="text-xl font-semibold text-green-600 mt-2">{T('excellentWork')}</p>
-        {!isLastLevel && <p className="text-slate-600">{T('unlockedNextLevel')}</p>}
+        <p className="text-xl font-semibold text-green-600 mt-2"><TranslatedText language={language} textKey="excellentWork" /></p>
+        {!isLastLevel && <p className="text-slate-600"><TranslatedText language={language} textKey="unlockedNextLevel" /></p>}
         <div className="flex flex-col sm:flex-row gap-4 mt-6">
-          <button onClick={handleBackToSelection} className="px-6 py-3 bg-slate-500 text-white font-semibold rounded-lg shadow-md hover:bg-slate-600">{T('backToLevels')}</button>
-          {!isLastLevel && <button onClick={() => startLevel(level! + 1)} className="px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600">{T('nextLevel')}</button>}
+          <button onClick={handleBackToSelection} className="px-6 py-3 bg-slate-500 text-white font-semibold rounded-lg shadow-md hover:bg-slate-600"><TranslatedText language={language} textKey="backToLevels" /></button>
+          {!isLastLevel && <button onClick={() => startLevel(level! + 1)} className="px-6 py-3 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600"><TranslatedText language={language} textKey="nextLevel" /></button>}
         </div>
       </div>
     );
@@ -166,10 +167,10 @@ export const MatchingColorsMode: React.FC<MatchingColorsModeProps> = ({ language
   return (
     <div className="bg-white/60 backdrop-blur-lg rounded-2xl shadow-lg p-4 md:p-8 w-full max-w-2xl flex flex-col items-center gap-6 animate-fadeIn">
         <div className="w-full flex justify-between items-center">
-            <button onClick={handleBackToSelection} className="text-slate-600 hover:text-slate-800 font-semibold">&larr; {T('back')}</button>
+            <button onClick={handleBackToSelection} className="text-slate-600 hover:text-slate-800 font-semibold">&larr; <TranslatedText language={language} textKey="back" /></button>
             <div className="text-right">
-                <p className="font-bold text-slate-700">{T('level', { level: level!.toString() })}</p>
-                <p className="text-sm text-slate-500">{T('connectTheColor')}</p>
+                <p className="font-bold text-slate-700"><TranslatedText language={language} textKey="level" replacements={{ level: level!.toString() }} /></p>
+                <p className="text-sm text-slate-500"><TranslatedText language={language} textKey="connectTheColor" /></p>
             </div>
         </div>
         
