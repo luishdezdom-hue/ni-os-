@@ -1,4 +1,5 @@
-export type Language = 'es-MX' | 'en-US' | 'nah';
+
+export type Language = 'es-MX' | 'en-US' | 'nah' | 'pt-BR';
 
 const translations: { [lang in Language]: { [key: string]: string } } = {
   'es-MX': {
@@ -345,6 +346,113 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     learnDivisionTitle: 'Momachtia Tlaxeloa (÷)',
     learnDivisionDesc: 'Tlaxeloa quixeloa ce tlapoalli.',
     divideExample1: '10 ÷ 2 = 5',
+    divideExample2: '9 ÷ 3 = 3',
+  },
+  'pt-BR': {
+    // General
+    back: 'Voltar',
+    level: 'Nível {level}',
+    excellent: 'Excelente!',
+    excellentWork: 'Excelente Trabalho!',
+    correctExclamation: 'Correto!',
+    almost: 'Quase!',
+    almostThere: 'Quase lá! Você precisa de {score}% para passar.',
+    goodTry: 'Boa tentativa! Continue assim.',
+    ohNo: 'Ah, não!',
+    retry: 'Tentar Novamente',
+    nextLevel: 'Próximo Nível',
+    unlockedNextLevel: 'Você desbloqueou o próximo nível!',
+    levelCompleted: 'Nível {level} Concluído',
+    yourScore: 'Sua Pontuação:',
+    backToLevels: 'Voltar aos Níveis',
+    check: 'Verificar',
+    checking: 'Verificando...',
+    analyzing: 'Analisando...',
+    listenToLetter: 'Ouvir a letra',
+    readyToPlay: 'Pronto para Jogar!',
+    play: 'Jogar',
+    learn: 'Aprender',
+
+    // Language/Character Selection
+    chooseYourGuide: 'Escolha seu Guia',
+    selectACharacter: 'Selecione um personagem para te acompanhar na sua aventura.',
+    charGreeting: 'Olá, eu sou {name}!',
+    begin: 'Começar',
+
+    // Alphabet Explorer
+    alphabetExplorer: 'Explorar Alfabeto',
+    selectALetterToLearn: 'Selecione uma letra para aprender mais.',
+    theLetterIs: 'A letra é {letter} de {word}',
+
+    // Camera/Recognition Mode
+    identifyingLetter: 'Identificando a letra...',
+    couldNotIdentify: 'Não foi possível identificar.',
+    tryCentering: 'Tente centralizar a letra e certifique-se de que há boa luz.',
+    itLooksLike: 'Parece um(a)...',
+    showAndRecognize: 'Mostre uma letra para a câmera para que ela a reconheça.',
+    findWithCamera: 'Encontrar com a Câmera',
+    turnOnCamera: 'Ligar Câmera',
+    turnOffCamera: 'Desligar Câmera',
+    
+    // Quiz Mode
+    findTheLetter: 'Encontre a letra {letter}',
+    correctIsLetter: 'Correto! Essa é a letra {letter}.',
+    youFoundLetter: 'Você encontrou a letra',
+    nextLetter: 'Próxima Letra',
+    cameraSaw: 'A câmera viu "{sawLetter}", mas estamos procurando por "{targetLetter}".',
+    keepTrying: 'Continue tentando!',
+    findThisLetter: 'Procure esta letra:',
+
+    // Drawing Mode
+    drawingMode: 'Modo de Desenho',
+    drawTheLetterYouSee: 'Desenhe a letra que você vê abaixo.',
+    letterToDraw: 'Letra para desenhar:',
+    drawTheLetter: 'Desenhe a letra {letter}',
+    clear: 'Limpar',
+
+    // Words Mode
+    wordsMode: 'Modo Palavras',
+    baseLevel: 'Nível Básico',
+    advancedLevel: 'Nível Avançado',
+    wordOf: 'Palavra {current} de {total}',
+    listenToWord: 'Ouvir a palavra',
+    listenToWordSpelled: 'Ouvir a palavra soletrada',
+    theCorrectWordWas: 'A palavra correta era:',
+    
+    // Colors Mode
+    colorsMode: 'Modo Cores',
+    findTheColor: 'Encontre a cor {color}',
+    checkColor: 'Verificar Cor',
+    nextColor: 'Próxima Cor',
+    matchTheColor: 'Combine a Cor',
+    connectTheColor: 'Conecte a cor ao seu nome.',
+    colorOf: 'Cor {current} de {total}',
+    
+    // Numbers Mode
+    numbersMode: 'Modo Números',
+    writeTheNumber: 'Escrever o Número',
+    addAndSubtract: 'Somar e Subtrair',
+    multiplyAndDivide: 'Multiplicar e Dividir',
+    writeTheDigit: 'Escreva o dígito correspondente:',
+    numberAsWord: 'Escreva o nome do número:',
+    theCorrectNumberWas: 'O número correto era:',
+    problemOf: 'Problema {current} de {total}',
+    theCorrectAnswerWas: 'A resposta correta era:',
+    learnAdditionTitle: 'Aprendendo a Somar (+)',
+    learnAdditionDesc: 'A soma junta dois ou mais números para obter um total. É como adicionar mais brinquedos à sua coleção.',
+    addExample1: '5 + 3 = 8',
+    addExample2: '10 + 20 = 30',
+    learnSubtractionTitle: 'Aprendendo a Subtrair (-)',
+    learnSubtractionDesc: 'A subtração retira um número de outro. É como se você comesse alguns biscoitos de um prato.',
+    subtractExample1: '8 - 2 = 6',
+    subtractExample2: '50 - 10 = 40',
+    learnMultiplicationTitle: 'Aprendendo a Multiplicar (×)',
+    learnMultiplicationDesc: 'A multiplicação é somar um número a si mesmo várias vezes. É uma forma rápida de somar.',
+    multiplyExample1: '4 × 3 = 12 (é como 4 + 4 + 4)',
+    multiplyExample2: '5 × 5 = 25',
+    learnDivisionTitle: 'Aprendendo a Dividir (÷)',
+    learnDivisionDesc: 'A divisão é repartir um número em partes iguais. Como compartilhar doces com seus amigos.',
+    divideExample1: '10 ÷ 2 = 5 (10 doces para 2 amigos)',
     divideExample2: '9 ÷ 3 = 3',
   },
 };

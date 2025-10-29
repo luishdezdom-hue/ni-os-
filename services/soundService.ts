@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Modality } from "@google/genai";
 import { Language } from './i18n';
 
@@ -81,6 +82,9 @@ const getAudioBuffer = async (text: string, voiceName: string, language: Languag
           case 'en-US':
                prompt = `Say in English: ${text}`;
                break;
+          case 'pt-BR':
+                prompt = `Pronuncie em português: ${text}`;
+                break;
           // For Nahuatl, we pass the text directly, as an English/Spanish prompt might confuse the model.
           case 'nah':
           default:

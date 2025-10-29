@@ -1,9 +1,10 @@
+
 export interface Word {
   word: string;
   image: string; // URL or base64 data URL
 }
 
-export type Language = 'es-MX' | 'en-US' | 'nah';
+export type Language = 'es-MX' | 'en-US' | 'nah' | 'pt-BR';
 
 const createSvgUrl = (emoji: string) => {
   const colors = ['#ffadad', '#ffd6a5', '#fdffb6', '#caffbf', '#9bf6ff', '#a0c4ff', '#bdb2ff', '#ffc6ff'];
@@ -122,6 +123,40 @@ const WORDS_DB: { [lang in Language]: { [level: number]: Word[] } } = {
       { word: 'chilli', image: createSvgUrl('🌶️') }, // Chili
       { word: 'ehecatl', image: createSvgUrl('🌬️') }, // Wind
     ]
+  },
+  'pt-BR': {
+    1: [ // 3 letters
+      { word: 'sol', image: createSvgUrl('☀️') },
+      { word: 'paz', image: createSvgUrl('🕊️') },
+      { word: 'luz', image: createSvgUrl('💡') },
+      { word: 'mar', image: createSvgUrl('🌊') },
+      { word: 'pão', image: createSvgUrl('🍞') },
+      { word: 'rei', image: createSvgUrl('👑') },
+    ],
+    2: [ // 4 letters
+      { word: 'lua', image: createSvgUrl('🌙') },
+      { word: 'casa', image: createSvgUrl('🏠') },
+      { word: 'gato', image: createSvgUrl('🐈') },
+      { word: 'flor', image: createSvgUrl('🌸') },
+      { word: 'nuvem', image: createSvgUrl('☁️') },
+      { word: 'água', image: createSvgUrl('💧') },
+    ],
+    3: [ // 5 letters
+      { word: 'árvore', image: createSvgUrl('🌳') },
+      { word: 'feliz', image: createSvgUrl('😊') },
+      { word: 'livro', image: createSvgUrl('📖') },
+      { word: 'praia', image: createSvgUrl('🏖️') },
+      { word: 'verde', image: createSvgUrl('🍃') },
+      { word: 'rato', image: createSvgUrl('🐁') },
+    ],
+    4: [ // 6 letters
+      { word: 'festa', image: createSvgUrl('🎉') },
+      { word: 'música', image: createSvgUrl('🎵') },
+      { word: 'sapato', image: createSvgUrl('👟') },
+      { word: 'escola', image: createSvgUrl('🏫') },
+      { word: 'camisa', image: createSvgUrl('👕') },
+      { word: 'médico', image: createSvgUrl('🧑‍⚕️') },
+    ]
   }
 };
 
@@ -129,6 +164,7 @@ let lastWordIndexes: { [lang: string]: { [level: number]: number } } = {
   'es-MX': {},
   'en-US': {},
   'nah': {},
+  'pt-BR': {},
 };
 
 export const getRandomWord = (level: number, lang: Language): Word => {

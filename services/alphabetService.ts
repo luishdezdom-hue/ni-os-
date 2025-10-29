@@ -1,3 +1,4 @@
+
 import { Language } from './i18n';
 
 export interface LetterExample {
@@ -103,7 +104,35 @@ const ALPHABET_EXAMPLES: { [lang in Language]: { [letter: string]: LetterExample
     'X': { word: 'Xochitl', image: createSvgUrl('🌸') },
     'Y': { word: 'Yollotl', image: createSvgUrl('❤️') }, // Heart
     'Z': { word: 'Zanatl', image: createSvgUrl('🐦‍⬛') }, // A type of bird
-  }
+  },
+  'pt-BR': {
+    'A': { word: 'Avião', image: createSvgUrl('✈️') },
+    'B': { word: 'Bola', image: createSvgUrl('⚽') },
+    'C': { word: 'Casa', image: createSvgUrl('🏠') },
+    'D': { word: 'Dado', image: createSvgUrl('🎲') },
+    'E': { word: 'Estrela', image: createSvgUrl('⭐') },
+    'F': { word: 'Flor', image: createSvgUrl('🌸') },
+    'G': { word: 'Gato', image: createSvgUrl('🐈') },
+    'H': { word: 'Hambúrguer', image: createSvgUrl('🍔') },
+    'I': { word: 'Ilha', image: createSvgUrl('🏝️') },
+    'J': { word: 'Jacaré', image: createSvgUrl('🐊') },
+    'K': { word: 'Kiwi', image: createSvgUrl('🥝') },
+    'L': { word: 'Lua', image: createSvgUrl('🌙') },
+    'M': { word: 'Maçã', image: createSvgUrl('🍎') },
+    'N': { word: 'Nuvem', image: createSvgUrl('☁️') },
+    'O': { word: 'Olho', image: createSvgUrl('👀') },
+    'P': { word: 'Pato', image: createSvgUrl('🦆') },
+    'Q': { word: 'Queijo', image: createSvgUrl('🧀') },
+    'R': { word: 'Rato', image: createSvgUrl('🐁') },
+    'S': { word: 'Sol', image: createSvgUrl('☀️') },
+    'T': { word: 'Tigre', image: createSvgUrl('🐅') },
+    'U': { word: 'Uva', image: createSvgUrl('🍇') },
+    'V': { word: 'Vaca', image: createSvgUrl('🐄') },
+    'W': { word: 'Wi-fi', image: createSvgUrl('📶') },
+    'X': { word: 'Xícara', image: createSvgUrl('☕') },
+    'Y': { word: 'Yoga', image: createSvgUrl('🧘') },
+    'Z': { word: 'Zebra', image: createSvgUrl('🦓') },
+  },
 };
 
 export const getExampleForLetter = (letter: string, lang: Language): LetterExample | null => {

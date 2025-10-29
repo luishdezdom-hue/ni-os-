@@ -1,3 +1,4 @@
+
 export interface Sentence {
   text: string; // e.g., "The {word} is yellow."
   correctWord: string;
@@ -5,7 +6,7 @@ export interface Sentence {
   distractors: { word: string; image: string; }[];
 }
 
-export type Language = 'es-MX' | 'en-US' | 'nah';
+export type Language = 'es-MX' | 'en-US' | 'nah' | 'pt-BR';
 
 // --- Reusable Image Generation ---
 const createSvgUrl = (emoji: string) => {
@@ -32,13 +33,16 @@ const IMAGE_DB: { [key: string]: string } = {
   // en-US words (some overlap)
   sun: '☀️', home: '🏠', cat: '🐈', ball: '⚽', apple: '🍎', dog: '🐕', bird: '🐦', girl: '👧', car: '🚗', moon: '🌙', tree: '🌳', flower: '🌸', book: '📖', water: '💧',
   // nah words
-  tonatiuh: '☀️', calli: '🏠', miztli: '🐈', itzcuintli: '🐕', cuahuitl: '🌳', xochitl: '🌸', atl: '💧', axolotl: '🦎', papalotl: '🦋', tochtli: '🐇', oquichtli: '👦', cihuatl: '👧', metztli: '🌙'
+  tonatiuh: '☀️', calli: '🏠', miztli: '🐈', itzcuintli: '🐕', cuahuitl: '🌳', xochitl: '🌸', atl: '💧', axolotl: '🦎', papalotl: '🦋', tochtli: '🐇', oquichtli: '👦', cihuatl: '👧', metztli: '🌙',
+  // pt-BR words
+  bola: '⚽', maçã: '🍎', cachorro: '🐕', pássaro: '🐦', menina: '👧', carro: '🚗',
 };
 
 const LANGUAGE_WORD_POOL: { [lang in Language]: string[] } = {
     'es-MX': ['sol', 'casa', 'gato', 'pelota', 'manzana', 'perro', 'pájaro', 'niña', 'coche', 'luna', 'árbol', 'flor', 'libro', 'agua'],
     'en-US': ['sun', 'home', 'cat', 'ball', 'apple', 'dog', 'bird', 'girl', 'car', 'moon', 'tree', 'flower', 'book', 'water'],
-    'nah': ['tonatiuh', 'calli', 'miztli', 'itzcuintli', 'cuahuitl', 'xochitl', 'atl', 'axolotl', 'papalotl', 'tochtli', 'oquichtli', 'cihuatl', 'metztli']
+    'nah': ['tonatiuh', 'calli', 'miztli', 'itzcuintli', 'cuahuitl', 'xochitl', 'atl', 'axolotl', 'papalotl', 'tochtli', 'oquichtli', 'cihuatl', 'metztli'],
+    'pt-BR': ['sol', 'casa', 'gato', 'bola', 'maçã', 'cachorro', 'pássaro', 'menina', 'carro', 'lua', 'árvore', 'flor', 'livro', 'água'],
 };
 
 
@@ -91,13 +95,21 @@ const SENTENCES_DB: { [lang in Language]: { [level: number]: Omit<Sentence, 'cor
       { text: 'N {word} tlacua.', correctWord: 'oquichtli' }, // The boy eats
       { text: 'N {word} cecec.', correctWord: 'atl' }, // The water is cold
     ]
+  },
+  'pt-BR': {
+    1: [],
+    2: []
   }
 };
 
 export const getSentencesForLevel = (level: number, lang: Language, count: number): Sentence[] => {
     const sentenceTemplates = SENTENCES_DB[lang]?.[level];
-    if (!sentenceTemplates || sentenceTemplates.length < count) {
-        // Fallback to level 1 if requested level doesn't exist or is empty
+    if (!sentenceTemplates || sentenceTemplates.length < 1) {
+        // Fallback or error for languages without sentences
+        if (lang === 'pt-BR') {
+            console.warn(`Attempted to get sentences for disabled language: ${lang}`);
+            return [];
+        }
         const fallbackTemplates = SENTENCES_DB[lang]?.[1];
         if (!fallbackTemplates) throw new Error(`No sentences found for language ${lang}`);
         return getSentencesForLevel(1, lang, count);

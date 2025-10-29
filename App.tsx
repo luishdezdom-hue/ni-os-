@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { Character } from './services/characterService';
 import { Language } from './services/i18n';
@@ -36,6 +37,7 @@ const ALPHABETS: { [lang in Language]: string[] } = {
   'es-MX': 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split(''),
   'en-US': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
   'nah': 'ABCDEHIJKLMNÑOPSTUWXYZ'.split(''), // A simplified alphabet for Nahuatl
+  'pt-BR': 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
 };
 
 const App: React.FC = () => {
@@ -164,6 +166,12 @@ const App: React.FC = () => {
         }
     }, [appState, mainMode, letterMode, targetLetter, handleNextQuiz]);
 
+    useEffect(() => {
+        if (mainMode === 'sentences' && language === 'pt-BR') {
+            setMainMode('alphabet');
+        }
+    }, [mainMode, language]);
+
     const handleRecognizeLetter = async () => {
         if (isLoading || !cameraFeedRef.current) return;
         playSound('click');
@@ -211,6 +219,9 @@ const App: React.FC = () => {
         const T = (key: string) => getTranslation(language, key);
 
         const mainContent = () => {
+            if (mainMode === 'sentences' && language === 'pt-BR') {
+                return null;
+            }
             switch(mainMode) {
                 case 'alphabet':
                     return (
@@ -279,7 +290,7 @@ const App: React.FC = () => {
                        <ModeButton icon={<BookOpenIcon className="w-6 h-6"/>} label="Letras" active={mainMode === 'alphabet'} onClick={() => setMainMode('alphabet')} />
                        <ModeButton icon={<SparklesIcon className="w-6 h-6"/>} label={T('alphabetExplorer')} active={mainMode === 'alphabet_explorer'} onClick={() => setMainMode('alphabet_explorer')} />
                        <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label="Palabras" active={mainMode === 'words'} onClick={() => setMainMode('words')} />
-                       <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label="Oraciones" active={mainMode === 'sentences'} onClick={() => setMainMode('sentences')} />
+                       {language !== 'pt-BR' && <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label="Oraciones" active={mainMode === 'sentences'} onClick={() => setMainMode('sentences')} />}
                        <ModeButton icon={<SwatchIcon className="w-6 h-6"/>} label="Colores" active={mainMode === 'colors'} onClick={() => { setMainMode('colors'); setColorGame('selection'); }} />
                        <ModeButton icon={<HashtagIcon className="w-6 h-6"/>} label="Números" active={mainMode === 'numbers'} onClick={() => { setMainMode('numbers'); setNumberGame('selection'); }} />
                        <ModeButton icon={<UserIcon className="w-6 h-6"/>} label="Progreso" active={mainMode === 'progress'} onClick={() => setMainMode('progress')} />

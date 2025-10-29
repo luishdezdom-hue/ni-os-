@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Language } from '../services/i18n';
 import { PaintBrushIcon, CalculatorIcon } from './Icons';
@@ -45,10 +46,11 @@ export const LanguageSelection: React.FC<LanguageSelectionProps> = ({ onAlphabet
                 {subtitle}
                 </p>
             </div>
-            <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <LanguageCard onClick={() => onLanguageSelect('es-MX')} lang="Español" country="México" flag="🇲🇽" />
                 <LanguageCard onClick={() => onLanguageSelect('en-US')} lang="English" country="USA" flag="🇺🇸" />
                 <LanguageCard onClick={() => onLanguageSelect('nah')} lang="Náhuatl" country="Huasteca" flag="🌺" />
+                <LanguageCard onClick={() => onLanguageSelect('pt-BR')} lang="Português" country="Brasil" flag="🇧🇷" />
             </div>
             <footer className="text-center mt-12 text-slate-500">
                 <p>UMB ATENCO</p>
@@ -67,10 +69,11 @@ export const LanguageSelection: React.FC<LanguageSelectionProps> = ({ onAlphabet
           Selecciona un idioma para comenzar tu aventura de aprendizaje con las letras.
         </p>
       </div>
-      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <LanguageCard onClick={() => onAlphabetSelect?.('es-MX')} lang="Español" country="México" flag="🇲🇽" />
         <LanguageCard onClick={() => onAlphabetSelect?.('en-US')} lang="English" country="USA" flag="🇺🇸" />
         <LanguageCard onClick={() => onAlphabetSelect?.('nah')} lang="Náhuatl" country="Huasteca" flag="🌺" />
+        <LanguageCard onClick={() => onAlphabetSelect?.('pt-BR')} lang="Português" country="Brasil" flag="🇧🇷" />
       </div>
        <footer className="text-center mt-12 text-slate-500">
           <p>UMB ATENCO</p>

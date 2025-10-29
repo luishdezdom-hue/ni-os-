@@ -1,9 +1,10 @@
+
 export interface Color {
   name: string;
   hex: string;
 }
 
-export type Language = 'es-MX' | 'en-US' | 'nah';
+export type Language = 'es-MX' | 'en-US' | 'nah' | 'pt-BR';
 
 const COLORS_DB: { [lang in Language]: Color[] } = {
   'es-MX': [
@@ -59,6 +60,24 @@ const COLORS_DB: { [lang in Language]: Color[] } = {
     { name: 'Iztacteocuitlatl', hex: '#C0C0C0' }, // Silver
     { name: 'Xiuhtic', hex: '#40E0D0' }, // Turquoise
     { name: 'Ixnezcayotl', hex: '#FF00FF' }, // Magenta
+  ],
+  'pt-BR': [
+    { name: 'Vermelho', hex: '#FF0000' },
+    { name: 'Amarelo', hex: '#FFFF00' },
+    { name: 'Azul', hex: '#0000FF' },
+    { name: 'Verde', hex: '#008000' },
+    { name: 'Laranja', hex: '#FFA500' },
+    { name: 'Roxo', hex: '#800080' },
+    { name: 'Preto', hex: '#000000' },
+    { name: 'Branco', hex: '#FFFFFF' },
+    { name: 'Cinza', hex: '#808080' },
+    { name: 'Marrom', hex: '#A52A2A' },
+    { name: 'Rosa', hex: '#FFC0CB' },
+    { name: 'Azul Celeste', hex: '#87CEEB' },
+    { name: 'Dourado', hex: '#FFD700' },
+    { name: 'Prateado', hex: '#C0C0C0' },
+    { name: 'Turquesa', hex: '#40E0D0' },
+    { name: 'Magenta', hex: '#FF00FF' },
   ],
 };
 

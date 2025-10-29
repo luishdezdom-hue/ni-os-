@@ -1,3 +1,4 @@
+
 // services/numberService.ts
 
 import { Language } from './i18n';
@@ -19,6 +20,10 @@ const NUMBERS_DB: { [lang in Language]: { [key: number]: string } } = {
   'nah': {
     0: 'ahtle', 1: 'ce', 2: 'ome', 3: 'yei', 4: 'nahui', 5: 'macuilli', 6: 'chicuace', 7: 'chicome', 8: 'chicuei', 9: 'chicnahui', 10: 'mahtlactli',
     11: 'mahtlactli once', 12: 'mahtlactli omome', 13: 'mahtlactli omey', 14: 'mahtlactli onnahui', 15: 'caxtolli', 16: 'caxtolli once', 17: 'caxtolli omome', 18: 'caxtolli omey', 19: 'caxtolli onnahui', 20: 'cempohualli',
+  },
+  'pt-BR': {
+    0: 'zero', 1: 'um', 2: 'dois', 3: 'três', 4: 'quatro', 5: 'cinco', 6: 'seis', 7: 'sete', 8: 'oito', 9: 'nove', 10: 'dez',
+    11: 'onze', 12: 'doze', 13: 'treze', 14: 'catorze', 15: 'quinze', 16: 'dezesseis', 17: 'dezessete', 18: 'dezoito', 19: 'dezenove', 20: 'vinte',
   },
 };
 
