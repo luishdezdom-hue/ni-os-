@@ -142,11 +142,11 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character, userN
       setStatus('correct');
       setSessionCorrectCount(prev => prev + 1);
       playSound('success');
-      setTimeout(goToNextWord, 1500);
+      setTimeout(goToNextWord, 1000);
     } else {
       setStatus('incorrect');
       playSound('error');
-      setTimeout(goToNextWord, 2500); // Go to next word even if incorrect
+      setTimeout(goToNextWord, 1000); // Go to next word even if incorrect
     }
   };
 
@@ -312,10 +312,11 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character, userN
                                 className="p-2 bg-purple-100 text-purple-600 rounded-full hover:bg-purple-200 transition-all"
                                 aria-label={T('listenToWord')}
                             >
-                                <SpeakerWaveIcon className="w-7 h-7" />
+                                <SpeakerWaveIcon className="w-6 h-6" />
                             </button>
                         </div>
                     )}
+                    
                     <div className="relative w-full max-w-sm">
                         <input
                             type="text"
@@ -329,28 +330,27 @@ export const WordsMode: React.FC<WordsModeProps> = ({ language, character, userN
                                 status === 'correct' ? 'border-green-500' :
                                 'border-slate-300 focus:border-purple-500 focus:ring-purple-500'
                             }`}
-                            placeholder="_ _ _"
+                            placeholder="..."
                         />
-                         {status === 'correct' && (
-                            <CheckCircleIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 text-green-500" />
-                        )}
+                        {status === 'correct' && <CheckCircleIcon className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 text-green-500" />}
                     </div>
                     
                     <div className="h-16 flex flex-col items-center justify-center text-center">
-                        {status === 'incorrect' && currentWord && (
+                        {status === 'incorrect' && (
                             <div className="text-red-600 font-semibold animate-fadeIn">
-                                <p className="text-sm">
-                                    {T('theCorrectWordWas')}
-                                    {language !== 'es-MX' && <span className="block text-xs font-normal text-red-500 mt-0.5">({getTranslation('es-MX', 'theCorrectWordWas')})</span>}
-                                </p>
-                                <p className="text-2xl tracking-widest">{currentWord.word.toUpperCase()}</p>
+                                <p className="text-sm">{T('theCorrectWordWas')}</p>
+                                <p className="text-2xl">{currentWord.word}</p>
+                            </div>
+                        )}
+                         {status === 'correct' && (
+                            <div className="text-green-600 font-semibold animate-scaleIn">
+                                <p className="text-2xl">{T('correctExclamation')}</p>
                             </div>
                         )}
                     </div>
 
-                    <button onClick={checkAnswer} disabled={status !== 'playing' || !userInput} className="px-8 py-3 bg-purple-500 text-white font-bold text-lg rounded-lg shadow-md hover:bg-purple-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100">
+                    <button onClick={checkAnswer} disabled={status !== 'playing' || userInput === ''} className="px-8 py-3 bg-purple-500 text-white font-bold text-lg rounded-lg shadow-md hover:bg-purple-600 transition-transform transform hover:scale-105 disabled:bg-slate-400 disabled:cursor-not-allowed disabled:scale-100">
                         {T('check')}
-                        {language !== 'es-MX' && <span className="block text-xs font-normal mt-0.5 opacity-80">({getTranslation('es-MX', 'check')})</span>}
                     </button>
                 </div>
             </div>

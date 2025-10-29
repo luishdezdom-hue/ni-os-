@@ -1,6 +1,6 @@
 // components/NumberWritingMode.tsx
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { NumberData, getNumbersForLevel } from '../services/numberService';
+import { NumberData, getNumbersForLevel, getNumberData } from '../services/numberService';
 import { speakText, playSound, preloadSpeech } from '../services/soundService';
 import { LockClosedIcon, CheckCircleIcon, SpeakerWaveIcon } from './Icons';
 import { getTranslation, Language } from '../services/i18n';
@@ -26,6 +26,7 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
   const [currentNumber, setCurrentNumber] = useState<NumberData | null>(null);
   const [userInput, setUserInput] = useState('');
   const [status, setStatus] = useState<AnswerStatus>('playing');
+  const [spanishSubtitle, setSpanishSubtitle] = useState<string | null>(null);
   
   const [sessionNumbers, setSessionNumbers] = useState<NumberData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -48,6 +49,12 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
     if (currentNumber) {
       preloadSpeech(currentNumber.name, character.voiceName, language);
     }
+    if (language === 'nah' && currentNumber) {
+        const esData = getNumberData(currentNumber.digit, 'es-MX');
+        setSpanishSubtitle(esData ? `(${esData.name})` : null);
+    } else {
+        setSpanishSubtitle(null);
+    }
   }, [currentNumber, language, character]);
 
   const updateProgress = useCallback((newHighestLevel: number) => {
@@ -68,17 +75,29 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
     
     const newSessionNumbers = getNumbersForLevel(selectedLevel, language, NUMBERS_PER_LEVEL);
     setSessionNumbers(newSessionNumbers);
-    setCurrentNumber(newSessionNumbers[0]);
+    const firstNumber = newSessionNumbers[0];
+    setCurrentNumber(firstNumber);
+
+    if (language === 'nah') {
+        speakText(firstNumber.name, character.voiceName, language);
+    }
+
     setTimeout(() => inputRef.current?.focus(), 100);
-  }, [language]);
+  }, [language, character.voiceName]);
 
   const goToNextNumber = () => {
     const nextIndex = currentIndex + 1;
     if (nextIndex < sessionNumbers.length) {
+      const nextNumber = sessionNumbers[nextIndex];
       setCurrentIndex(nextIndex);
-      setCurrentNumber(sessionNumbers[nextIndex]);
+      setCurrentNumber(nextNumber);
       setUserInput('');
       setStatus('playing');
+
+      if (language === 'nah') {
+        speakText(nextNumber.name, character.voiceName, language);
+      }
+
        setTimeout(() => inputRef.current?.focus(), 100);
     } else {
       const score = Math.round((sessionCorrectCount / NUMBERS_PER_LEVEL) * 100);
@@ -96,7 +115,12 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
   const checkAnswer = () => {
     if (!currentNumber || status !== 'playing') return;
     playSound('click');
-    if (userInput.trim().toLowerCase() === currentNumber.name.toLowerCase()) {
+    
+    const isCorrect = language === 'nah'
+        ? userInput.trim() === currentNumber.digit.toString()
+        : userInput.trim().toLowerCase() === currentNumber.name.toLowerCase();
+
+    if (isCorrect) {
       setStatus('correct');
       setSessionCorrectCount(prev => prev + 1);
       playSound('success');
@@ -169,7 +193,14 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
         {currentNumber && (
             <div className="flex flex-col items-center gap-4 w-full">
                 <div className="flex items-center justify-center gap-4">
-                    <p className="text-9xl font-black text-slate-800">{currentNumber.digit}</p>
+                     {language === 'nah' ? (
+                        <div className="text-center">
+                            <p className="text-7xl font-black text-slate-800 capitalize">{currentNumber.name}</p>
+                            {spanishSubtitle && <p className="text-2xl text-slate-500 font-semibold mt-2">{spanishSubtitle}</p>}
+                        </div>
+                    ) : (
+                        <p className="text-9xl font-black text-slate-800">{currentNumber.digit}</p>
+                    )}
                     <button
                         onClick={() => { playSound('click'); speakText(currentNumber.name, character.voiceName, language); }}
                         className="p-3 bg-purple-100 text-purple-600 rounded-full hover:bg-purple-200 transition-all self-center"
@@ -179,13 +210,13 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
                     </button>
                 </div>
                 
-                <p className="text-slate-600">{T('numberAsWord')}</p>
+                <p className="text-slate-600">{T(language === 'nah' ? 'writeTheDigit' : 'numberAsWord')}</p>
 
                 <div className="w-full flex flex-col items-center gap-2 min-h-[180px] justify-center">
                     <div className="relative w-full max-w-sm">
                         <input
                             ref={inputRef}
-                            type="text"
+                            type={language === 'nah' ? 'number' : 'text'}
                             value={userInput}
                             onChange={(e) => setUserInput(e.target.value)}
                             onKeyPress={handleKeyPress}
@@ -205,7 +236,7 @@ export const NumberWritingMode: React.FC<NumberWritingModeProps> = ({ language, 
                         {status === 'incorrect' && (
                             <div className="text-red-600 font-semibold animate-fadeIn">
                                 <p className="text-sm">{T('theCorrectNumberWas')}</p>
-                                <p className="text-2xl">{currentNumber.name}</p>
+                                <p className="text-2xl">{language === 'nah' ? currentNumber.digit : currentNumber.name}</p>
                             </div>
                         )}
                          {status === 'correct' && (

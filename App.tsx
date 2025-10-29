@@ -16,13 +16,15 @@ import { ResultDisplay } from './components/ResultDisplay';
 import { recognizeLetter } from './services/geminiService';
 import { playSound } from './services/soundService';
 import { TypingMode } from './components/TypingMode';
-import { ArrowLeftIcon, BookOpenIcon, Bars3BottomLeftIcon, SwatchIcon, HashtagIcon, UserIcon } from './components/Icons';
+import { ArrowLeftIcon, BookOpenIcon, Bars3BottomLeftIcon, SwatchIcon, HashtagIcon, UserIcon, GlobeAltIcon, SparklesIcon } from './components/Icons';
 import { DecorativeBackground } from './components/DecorativeBackground';
 import { UserLogin } from './components/UserLogin';
 import { ProgressView } from './components/ProgressView';
+import { AlphabetExplorerMode } from './components/AlphabetExplorerMode';
+import { getTranslation } from './services/i18n';
 
 type AppState = 'user_login' | 'lang_select' | 'char_select' | 'main_app';
-type MainMode = 'alphabet' | 'words' | 'sentences' | 'colors' | 'numbers' | 'progress';
+type MainMode = 'alphabet' | 'alphabet_explorer' | 'words' | 'sentences' | 'colors' | 'numbers' | 'progress';
 type InitialPath = 'colors' | 'numbers';
 
 interface User {
@@ -100,6 +102,22 @@ const App: React.FC = () => {
         setLetterMode('recognize');
         setColorGame('selection');
         setNumberGame('selection');
+    };
+
+    const handleBackToLangSelect = () => {
+        playSound('click');
+        setLanguage(null);
+        setCharacter(null);
+        setAppState('lang_select');
+        setInitialPath(null);
+        setMainMode('alphabet');
+        setLetterMode('recognize');
+        setColorGame('selection');
+        setNumberGame('selection');
+        setQuizStatus('waiting');
+        setTargetLetter(null);
+        setRecognizedLetter(null);
+        setError(null);
     };
 
     const handleSelectAlphabetPath = (lang: Language) => {
@@ -190,6 +208,7 @@ const App: React.FC = () => {
     
     const renderAppContent = () => {
         if (appState !== 'main_app' || !language || !character || !currentUser) return null;
+        const T = (key: string) => getTranslation(language, key);
 
         const mainContent = () => {
             switch(mainMode) {
@@ -216,6 +235,8 @@ const App: React.FC = () => {
                             )}
                         </div>
                     );
+                case 'alphabet_explorer':
+                    return <AlphabetExplorerMode language={language} character={character} alphabet={currentAlphabet} />;
                 case 'words':
                     return <WordsMode language={language} character={character} userName={currentUser.name} />;
                 case 'sentences':
@@ -256,13 +277,18 @@ const App: React.FC = () => {
                    </div>
                    <nav className="flex flex-col gap-2 border-t pt-4">
                        <ModeButton icon={<BookOpenIcon className="w-6 h-6"/>} label="Letras" active={mainMode === 'alphabet'} onClick={() => setMainMode('alphabet')} />
+                       <ModeButton icon={<SparklesIcon className="w-6 h-6"/>} label={T('alphabetExplorer')} active={mainMode === 'alphabet_explorer'} onClick={() => setMainMode('alphabet_explorer')} />
                        <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label="Palabras" active={mainMode === 'words'} onClick={() => setMainMode('words')} />
                        <ModeButton icon={<Bars3BottomLeftIcon className="w-6 h-6"/>} label="Oraciones" active={mainMode === 'sentences'} onClick={() => setMainMode('sentences')} />
                        <ModeButton icon={<SwatchIcon className="w-6 h-6"/>} label="Colores" active={mainMode === 'colors'} onClick={() => { setMainMode('colors'); setColorGame('selection'); }} />
                        <ModeButton icon={<HashtagIcon className="w-6 h-6"/>} label="Números" active={mainMode === 'numbers'} onClick={() => { setMainMode('numbers'); setNumberGame('selection'); }} />
                        <ModeButton icon={<UserIcon className="w-6 h-6"/>} label="Progreso" active={mainMode === 'progress'} onClick={() => setMainMode('progress')} />
                    </nav>
-                   <div className="border-t pt-4 mt-auto">
+                   <div className="border-t pt-4 mt-auto flex flex-col gap-2">
+                        <button onClick={handleBackToLangSelect} className="w-full flex items-center gap-2 justify-center px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg font-semibold text-slate-700 shadow-sm">
+                            <GlobeAltIcon className="w-5 h-5"/>
+                            <span>Cambiar Idioma</span>
+                        </button>
                         <button onClick={handleLogout} className="w-full flex items-center gap-2 justify-center px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg font-semibold text-slate-700 shadow-sm">
                             <ArrowLeftIcon className="w-5 h-5"/>
                             <span>Cambiar Usuario</span>

@@ -32,6 +32,11 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     charGreeting: '¡Hola, soy {name}!',
     begin: 'Comenzar',
 
+    // Alphabet Explorer
+    alphabetExplorer: 'Explorar Abecedario',
+    selectALetterToLearn: 'Selecciona una letra para aprender más.',
+    theLetterIs: 'La letra es {letter} {word}',
+
     // Camera/Recognition Mode
     identifyingLetter: 'Identificando la letra...',
     couldNotIdentify: 'No se pudo identificar.',
@@ -89,6 +94,7 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     writeTheNumber: 'Escribe el Número',
     addAndSubtract: 'Sumar y Restar',
     multiplyAndDivide: 'Multiplicar y Dividir',
+    writeTheDigit: 'Escribe el dígito correspondiente:',
     numberAsWord: 'Escribe el nombre del número:',
     theCorrectNumberWas: 'El número correcto era:',
     problemOf: 'Problema {current} de {total}',
@@ -140,6 +146,11 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     selectACharacter: 'Select a character to join you on your adventure.',
     charGreeting: 'Hi, I\'m {name}!',
     begin: 'Begin',
+
+    // Alphabet Explorer
+    alphabetExplorer: 'Alphabet Explorer',
+    selectALetterToLearn: 'Select a letter to learn more.',
+    theLetterIs: 'The letter is {letter} {word}',
 
     // Camera/Recognition Mode
     identifyingLetter: 'Identifying the letter...',
@@ -198,6 +209,7 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     writeTheNumber: 'Write the Number',
     addAndSubtract: 'Add & Subtract',
     multiplyAndDivide: 'Multiply & Divide',
+    writeTheDigit: 'Write the corresponding digit:',
     numberAsWord: 'Write the number\'s name:',
     theCorrectNumberWas: 'The correct number was:',
     problemOf: 'Problem {current} of {total}',
@@ -250,6 +262,11 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     selectACharacter: 'Tlapejpeni ce tlamantli.',
     charGreeting: '¡Niltze, nehuatl {name}!',
     begin: 'Pepehua',
+
+    // Alphabet Explorer
+    alphabetExplorer: 'Tlamachtiloyan',
+    selectALetterToLearn: 'Xipehpena ce machiotlahtoltiliztli.',
+    theLetterIs: 'Machiotlahtoltiliztli {letter} {word}',
 
     // Camera/Recognition Mode
     identifyingLetter: 'Tlachialo in letra...',
@@ -308,6 +325,7 @@ const translations: { [lang in Language]: { [key: string]: string } } = {
     writeTheNumber: 'Xihcuilo in Tlapoalli',
     addAndSubtract: 'Tlacepahua huan Tlatlacui',
     multiplyAndDivide: 'Tlamichihua huan Tlaxeloa',
+    writeTheDigit: 'Xihcuilo in tlapoalli:',
     numberAsWord: 'Xihcuilo itoca in tlapoalli:',
     theCorrectNumberWas: 'In tlapoalli melahuac:',
     problemOf: 'Problema {current} de {total}',
